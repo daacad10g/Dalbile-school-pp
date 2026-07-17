@@ -1,0 +1,1335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DALBILE P.P.S - Premium Mobile Management Hub</title>
+
+<!-- FontAwesome Icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+:root {
+    /* Base Color Architecture */
+    --bg-glow: #f0f4f9;
+    --text-main: #1d1d1f;
+    --text-muted: #6e6e73;
+    --glass-bg: rgba(255, 255, 255, 0.4);
+    --glass-border: rgba(255, 255, 255, 0.6);
+    --glass-highlight: rgba(255, 255, 255, 0.45);
+    
+    /* Premium High-Fidelity Gradients */
+    --vibrant-pink: linear-gradient(135deg, #ff0055 0%, #ff52a2 100%);
+    --vibrant-yellow: linear-gradient(135deg, #ff9500 0%, #ffcc00 100%);
+    --vibrant-red: linear-gradient(135deg, #ff2d55 0%, #ff6b8b 100%);
+    --vibrant-teal: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%);
+    --vibrant-purple: linear-gradient(135deg, #8a2be2 0%, #4a00e0 100%);
+    --vibrant-green: linear-gradient(135deg, #00b09b 0%, #96c93d 100%);
+    --vibrant-gold: linear-gradient(135deg, #bf953f 0%, #fcf6ba 50%, #b38728 100%);
+    
+    /* Premium Blue Glow Architecture */
+    --premium-blue-glow: linear-gradient(135deg, #0055ff 0%, #00d2ff 100%);
+    
+    /* Timing Controls */
+    --transition-slow: 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+    --premium-shadow: 0 30px 60px rgba(31, 38, 135, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+/* --- DEEP DARK MODE OVERRIDES --- */
+body.dark-mode {
+    --bg-glow: #06070d;
+    --text-main: #f5f5f7;
+    --text-muted: #8e8e93;
+    --glass-bg: rgba(15, 18, 30, 0.45);
+    --glass-border: rgba(255, 255, 255, 0.07);
+    --glass-highlight: rgba(255, 255, 255, 0.03);
+    --premium-shadow: 0 30px 60px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+/* --- BLACKBERRY & RED PREMIUM THEME OVERRIDE --- */
+body.blackberry-red {
+    --bg-glow: #0f050b;
+    --text-main: #fff0f5;
+    --text-muted: #c7b2be;
+    --glass-bg: rgba(30, 10, 20, 0.6);
+    --glass-border: rgba(255, 45, 85, 0.2);
+    --premium-shadow: 0 30px 60px rgba(255, 0, 85, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* RESET & LAYOUT SYSTEMS */
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif; }
+body { background-color: var(--bg-glow); color: var(--text-main); min-height: 100vh; display: flex; overflow-x: hidden; position: relative; transition: background-color var(--transition-slow), color var(--transition-slow); }
+
+/* --- AMBIENT FLOATING BACKGROUND ORBS --- */
+div.background-orchestrator { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; overflow: hidden; pointer-events: none; }
+.ambient-orb { position: absolute; border-radius: 50%; filter: blur(120px); opacity: 0.45; mix-blend-mode: plus-lighter; transition: background-image var(--transition-slow), background var(--transition-slow); }
+.orb-1 { width: 500px; height: 500px; top: -10%; left: -10%; background: rgba(255, 0, 85, 0.25); animation: slowFloatY 22s infinite ease-in-out alternate; }
+.orb-2 { width: 600px; height: 600px; bottom: -15%; right: -10%; background: rgba(0, 198, 255, 0.23); animation: slowFloatX 28s infinite ease-in-out alternate; }
+.orb-3 { width: 400px; height: 400px; top: 40%; left: 45%; background: rgba(138, 43, 226, 0.18); animation: slowFloatY 18s infinite ease-in-out alternate-reverse; }
+
+@keyframes slowFloatY { 0% { transform: translateY(0px) scale(1); } 100% { transform: translateY(80px) scale(1.15); } }
+@keyframes slowFloatX { 0% { transform: translateX(0px) rotate(0deg); } 100% { transform: translateX(-100px) rotate(30deg) scale(1.1); } }
+
+/* SIDEBAR SETUP */
+.sidebar { width: 300px; height: 100vh; position: fixed; top: 0; left: 0; background: rgba(255, 255, 255, 0.25); backdrop-filter: blur(40px) saturate(200%); -webkit-backdrop-filter: blur(40px) saturate(200%); border-right: 1px solid var(--glass-border); padding: 40px 24px; display: flex; flex-direction: column; justify-content: space-between; z-index: 100; transition: all var(--transition-slow); box-shadow: var(--premium-shadow); }
+.logo-enclosure { display: flex; align-items: center; gap: 16px; padding-bottom: 30px; border-bottom: 1px solid var(--glass-border); }
+.logo-ring { width: 52px; height: 52px; border-radius: 18px; background: var(--vibrant-pink); display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 25px rgba(255, 0, 85, 0.3); font-size: 22px; color: white; position: relative; overflow: hidden; }
+.brand { display: flex; flex-direction: column; }
+.brand-title { font-size: 14px; font-weight: 900; letter-spacing: -0.5px; background: var(--vibrant-purple); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+body.dark-mode .brand-title { background: var(--vibrant-gold); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+body.blackberry-red .brand-title { background: var(--vibrant-red); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.brand-subtitle { font-size: 9px; font-weight: 700; color: var(--text-muted); letter-spacing: 0.5px; margin-top: 3px; text-transform: uppercase; }
+.nav-menu { display: flex; flex-direction: column; gap: 12px; margin-top: 35px; }
+
+.sidebar button { width: 100%; padding: 16px 24px; border: 1px solid transparent; border-radius: 24px; background: transparent; color: var(--text-main); font-size: 15px; font-weight: 600; text-align: left; cursor: pointer; display: flex; align-items: center; gap: 16px; transition: all var(--transition-slow); }
+.sidebar button:hover { background: rgba(255, 255, 255, 0.4); border-color: var(--glass-border); transform: translateX(8px); }
+.sidebar button.active { background: var(--premium-blue-glow); color: white !important; font-weight: 700; box-shadow: 0 12px 30px rgba(0, 85, 255, 0.3); border-color: rgba(255, 255, 255, 0.2); }
+.sidebar button.active i { color: white; transform: scale(1.15); }
+
+/* MAIN CONTENT */
+.main { margin-left: 300px; width: calc(100% - 300px); padding: 50px; min-height: 100vh; transition: all var(--transition-slow); }
+.top-navbar { display: flex; justify-content: space-between; align-items: center; background: var(--glass-bg); backdrop-filter: blur(25px) saturate(180%); -webkit-backdrop-filter: blur(25px) saturate(180%); border: 1px solid var(--glass-border); padding: 24px 40px; border-radius: 30px; box-shadow: var(--premium-shadow); margin-bottom: 45px; }
+.welcome-msg h1 { font-size: 28px; font-weight: 900; letter-spacing: -0.8px; }
+.welcome-msg p { color: var(--text-main); font-size: 14px; margin-top: 4px; }
+
+/* COMPACT LIVE SEARCH CONTAINER */
+.search-line-container {
+    background: var(--glass-bg);
+    padding: 16px 20px;
+    border-radius: 24px;
+    border: 1px solid var(--glass-border);
+    margin-top: 16px;
+}
+.search-line-bar {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+.search-line-bar i {
+    position: absolute;
+    left: 18px;
+    color: var(--text-muted);
+    font-size: 15px;
+}
+.search-line-bar input {
+    padding: 12px 16px 12px 46px !important;
+    margin-bottom: 0px !important;
+    border: 1px solid rgba(0, 0, 0, 0.08) !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+    border-radius: 18px !important;
+    font-size: 13.5px;
+}
+
+/* --- ULTRA CLASSY SMOOTH BLUE GLOWING BOTTOM NAVBAR --- */
+.bottom-nav-wrapper { 
+    display: none; 
+    position: fixed; 
+    bottom: 24px; 
+    left: 50%; 
+    transform: translateX(-50%); 
+    width: calc(100% - 32px); 
+    max-width: 600px; 
+    z-index: 999; 
+}
+.bottom-navbar { 
+    width: 100%;
+    background: rgba(255, 255, 255, 0.7) !important; 
+    backdrop-filter: blur(40px) saturate(220%); 
+    -webkit-backdrop-filter: blur(40px) saturate(220%); 
+    border: 1px solid rgba(255, 255, 255, 0.5) !important; 
+    box-shadow: 0 25px 50px rgba(0, 85, 255, 0.12), inset 0 1px 2px rgba(255,255,255,0.6); 
+    padding: 8px; 
+    border-radius: 40px; 
+    display: flex;
+    justify-content: space-between; 
+    align-items: center; 
+    transition: all var(--transition-slow);
+}
+body.dark-mode .bottom-navbar {
+    background: rgba(10, 15, 30, 0.75) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+}
+body.blackberry-red .bottom-navbar {
+    background: rgba(25, 5, 15, 0.8) !important;
+    border: 1px solid rgba(255, 45, 85, 0.2) !important;
+    box-shadow: 0 25px 50px rgba(255, 0, 85, 0.2);
+}
+.bottom-navbar button { 
+    background: transparent; 
+    border: none; 
+    color: var(--text-muted); 
+    font-size: 10px; 
+    font-weight: 700; 
+    cursor: pointer; 
+    flex: 1; 
+    padding: 12px 2px; 
+    border-radius: 30px; 
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px; 
+    transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+}
+.bottom-navbar button i { font-size: 16px; transition: transform 0.3s ease; }
+.bottom-navbar button.active { 
+    color: white !important; 
+    background: var(--premium-blue-glow) !important; 
+    box-shadow: 0 12px 25px rgba(0, 85, 255, 0.45), 0 0 15px rgba(0, 210, 255, 0.3); 
+    transform: translateY(-4px);
+}
+.bottom-navbar button.active i { transform: scale(1.15); }
+
+/* --- PAGE REVEAL ANIMATION --- */
+@keyframes premiumPageReveal {
+    0% { opacity: 0; transform: translateY(20px) scale(0.97); filter: blur(8px); }
+    100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+}
+
+.view-card { 
+    display: none; 
+    backdrop-filter: blur(40px) saturate(210%); 
+    -webkit-backdrop-filter: blur(40px) saturate(210%); 
+    border-radius: 40px; 
+    padding: 45px; 
+    margin-bottom: 35px; 
+    border: 1px solid var(--glass-border); 
+    box-shadow: var(--premium-shadow); 
+}
+
+/* INDIVIDUAL PAGE CLASS EFFECTS */
+.glass-portal { background: rgba(0, 198, 255, 0.05); border-color: rgba(0, 198, 255, 0.2); }
+.glass-teachers { background: rgba(255, 149, 0, 0.04); border-color: rgba(255, 149, 0, 0.2); }
+.glass-students { background: rgba(255, 45, 85, 0.04); border-color: rgba(255, 45, 85, 0.2); }
+.glass-kayd { background: rgba(0, 85, 255, 0.06); border-color: rgba(0, 85, 255, 0.25); }
+.glass-exams { background: rgba(255, 0, 85, 0.04); border-color: rgba(255, 0, 85, 0.2); }
+.glass-settings { background: rgba(0, 176, 155, 0.04); border-color: rgba(0, 176, 155, 0.2); }
+
+.view-card.active-view {
+    display: block !important;
+    animation: premiumPageReveal 0.75s cubic-bezier(0.25, 1, 0.35, 1) forwards;
+}
+
+.view-card h2 { font-size: 26px; font-weight: 900; margin-bottom: 35px; display: flex; align-items: center; gap: 16px; }
+.content-split { display: grid; grid-template-columns: 1fr; gap: 25px; } 
+
+/* PROFESSIONAL STAT CARDS */
+.stat-banner {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 25px;
+}
+.stat-card {
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid var(--glass-border);
+    padding: 20px;
+    border-radius: 24px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+body.dark-mode .stat-card { background: rgba(255, 255, 255, 0.03); }
+.stat-card i { font-size: 28px; color: #0072ff; }
+.stat-info { display: flex; flex-direction: column; }
+.stat-info .num { font-size: 22px; font-weight: 800; }
+.stat-info .lbl { font-size: 11px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; }
+
+/* DUAL LANE SYSTEMS - DEDICATED SIDE BY SIDE COLUMNS */
+.all-in-one-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-top: 10px;
+}
+@media (max-width: 900px) { 
+    .all-in-one-grid { 
+        grid-template-columns: 1fr; 
+    } 
+    .stat-banner { 
+        grid-template-columns: 1fr; 
+    } 
+}
+
+.portal-card, .form-box { background: var(--glass-bg); padding: 40px; border-radius: 35px; border: 1px solid var(--glass-border); }
+
+input, select { width: 100%; padding: 18px 24px; margin-bottom: 22px; border: 1px solid rgba(0, 0, 0, 0.05); border-radius: 24px; font-size: 14px; background: rgba(255, 255, 255, 0.7); font-weight: 600; outline: none; color: #1d1d1f; }
+body.dark-mode input, body.dark-mode select { background: rgba(15, 18, 30, 0.6); color: white; border-color: rgba(255,255,255,0.05); }
+body.blackberry-red input, body.blackberry-red select { background: rgba(40, 15, 25, 0.6); color: white; border-color: rgba(255,45,85,0.1); }
+
+.btn { width: 100%; padding: 18px; border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 24px; color: white; font-size: 15px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: all 0.3s ease; }
+.btn:hover { opacity: 0.9; transform: translateY(-2px); }
+
+.portal-tabs { display: flex; gap: 12px; margin-bottom: 30px; background: rgba(0, 0, 0, 0.03); padding: 6px; border-radius: 24px; }
+.p-tab { flex: 1; padding: 14px; border-radius: 18px; cursor: pointer; font-weight: 700; text-align: center; color: var(--text-muted); }
+#tab-s.active { background: var(--vibrant-teal); color: white; }
+#tab-t.active { background: var(--vibrant-purple); color: white; }
+
+.capsule-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 24px; }
+.grid-capsule { background: var(--glass-bg); padding: 30px; border-radius: 35px; border: 1px solid var(--glass-border); }
+
+.list-container { display: flex; flex-direction: column; gap: 16px; max-height: 520px; overflow-y: auto; padding-right: 5px; }
+
+/* VISUAL SEPARATION CARD DESIGNS */
+.item { background: rgba(255, 255, 255, 0.7); padding: 20px 24px; border-radius: 28px; border: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center; transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1); box-shadow: 0 8px 20px rgba(0,0,0,0.02); position: relative; }
+.item:hover { transform: translateY(-2px); box-shadow: 0 12px 25px rgba(0,0,0,0.05); }
+body.dark-mode .item { background: rgba(255, 255, 255, 0.03); }
+body.blackberry-red .item { background: rgba(255, 45, 85, 0.05); }
+
+/* Custom Left Accents for clear visual distinction */
+.item.student-item-card { border-left: 5px solid #ff2d55; }
+.item.teacher-item-card { border-left: 5px solid #ff9500; background: rgba(255, 149, 0, 0.02); }
+body.dark-mode .item.teacher-item-card { background: rgba(255, 149, 0, 0.04); }
+
+.item-text { display: flex; flex-direction: column; gap: 4px; }
+.item-text font { font-weight: 800; font-size: 16px; color: var(--text-main); letter-spacing: -0.3px; }
+.item-text span { font-size: 13px; color: var(--text-muted); font-weight: 600; }
+
+/* PREMIUM CONTROLS GRID - EDIT & DELETE TOGETHER */
+.action-box-controls { display: flex; align-items: center; gap: 8px; }
+.edit-premium-btn { background: rgba(0, 85, 255, 0.08); border: none; color: #0055ff; cursor: pointer; font-size: 14px; width: 38px; height: 38px; border-radius: 14px; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; }
+.edit-premium-btn:hover { background: var(--premium-blue-glow); color: white; transform: scale(1.05); }
+.delete-premium-btn { background: rgba(255, 45, 85, 0.08); border: none; color: #ff2d55; cursor: pointer; font-size: 14px; width: 38px; height: 38px; border-radius: 14px; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; }
+.delete-premium-btn:hover { background: var(--vibrant-red); color: white; transform: scale(1.05); }
+
+/* DIRECT PHONE CALL BUTTON FOR MY PHONE */
+.call-direct-btn { background: rgba(16, 185, 129, 0.1); border: none; color: #10b981; text-decoration: none; font-size: 14px; width: 38px; height: 38px; border-radius: 14px; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; }
+.call-direct-btn:hover { background: var(--vibrant-green); color: white; transform: scale(1.05); }
+
+/* PREMIUM MODAL SYSTEM OVERRIDE FOR ALERTS & EDITS */
+.premium-modal-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    background: rgba(10, 15, 30, 0.4);
+    backdrop-filter: blur(12px) saturate(140%);
+    -webkit-backdrop-filter: blur(12px) saturate(140%);
+    z-index: 10000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+.premium-modal-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(35px) saturate(200%);
+    -webkit-backdrop-filter: blur(35px) saturate(200%);
+    border: 1px solid var(--glass-border);
+    padding: 35px;
+    border-radius: 35px;
+    width: 90%;
+    max-width: 420px;
+    text-align: center;
+    box-shadow: var(--premium-shadow);
+    animation: premiumPageReveal 0.4s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+.premium-modal-circle {
+    width: 75px; height: 75px;
+    border-radius: 50%;
+    background: var(--vibrant-green);
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 20px auto;
+    color: white; font-size: 32px;
+    box-shadow: 0 15px 30px rgba(0, 176, 155, 0.35);
+}
+.premium-modal-title { font-size: 20px; font-weight: 900; margin-bottom: 10px; letter-spacing: -0.5px; }
+.premium-modal-message { font-size: 14px; color: var(--text-main); font-weight: 600; margin-bottom: 25px; line-height: 1.5; }
+
+@media (max-width: 768px) {
+    .sidebar { display: none !important; } 
+    .main { margin-left: 0; width: 100%; padding: 16px 16px 140px 16px; } 
+    .top-navbar { padding: 16px 20px; margin-bottom: 24px; border-radius: 24px; }
+    .bottom-nav-wrapper { display: flex; } 
+    .view-card { padding: 25px; border-radius: 30px; }
+}
+</style>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ULTRA PREMIUM PROFILE VIEW MODAL -->
+<div class="premium-modal-overlay" id="premium-profile-modal">
+    <div class="premium-modal-card" style="text-align: center; position: relative;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <span style="background: #e6f9f0; color: #10b981; padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: 700;">ARDAÝ XOGTIISA</span>
+            <button class="delete-premium-btn" style="width: 32px; height: 32px; border-radius: 50%; font-size: 16px;" onclick="closeStudentProfile()">&times;</button>
+        </div>
+        
+        <div id="p-modal-avatar" style="width: 80px; height: 80px; border-radius: 50%; background: var(--premium-blue-glow); display: flex; align-items: center; justify-content: center; color: white; font-size: 28px; font-weight: 900; margin: 0 auto 15px auto; box-shadow: 0 10px 25px rgba(0, 85, 255, 0.3);">M</div>
+        
+        <h3 class="premium-modal-title" id="p-modal-name" style="font-size: 22px; margin-bottom: 4px;">Student Name</h3>
+        <p id="p-modal-class" style="font-size: 12px; color: var(--text-muted); font-weight: 700; margin-bottom: 24px; text-transform: uppercase;">Class: 8aad</p>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; text-align: left; margin-bottom: 26px;">
+            <div style="background: rgba(255,255,255,0.12); border: 1px solid var(--glass-border); padding: 12px; border-radius: 16px;">
+                <span style="display:block; font-size:10px; color:var(--text-muted); font-weight:700; margin-bottom:2px;">📍 GOOBTA / DEGMADA</span>
+                <span id="p-modal-location" style="font-size:14px; font-weight:700;">Daynile</span>
+            </div>
+            <div style="background: rgba(255,255,255,0.12); border: 1px solid var(--glass-border); padding: 12px; border-radius: 16px;">
+                <span style="display:block; font-size:10px; color:var(--text-muted); font-weight:700; margin-bottom:2px;">🎂 DA'DA (AGE)</span>
+                <span id="p-modal-age" style="font-size:14px; font-weight:700;">12 Sano</span>
+            </div>
+            <div style="grid-column: span 2; background: rgba(255,255,255,0.12); border: 1px solid var(--glass-border); padding: 12px; border-radius: 16px;">
+                <span style="display:block; font-size:10px; color:var(--text-muted); font-weight:700; margin-bottom:2px;">📞 LABARKA TELEFOONKA</span>
+                <span id="p-modal-phone" style="font-size:14px; font-weight:700; color: #0055ff;">+252 610000000</span>
+            </div>
+        </div>
+        
+        <a id="p-modal-call-link" href="#" class="btn" style="background: linear-gradient(135deg, #00b09b 0%, #96c93d 100%); text-decoration: none; box-shadow: 0 10px 25px rgba(0, 176, 155, 0.25); font-weight: 800;">
+            <i class="fa fa-phone"></i> WAC ARDAYGA NOW
+        </a>
+    </div>
+</div>
+
+<!-- CUSTOM HIGH-FIDELITY MODAL (ALERTS) -->
+<div class="premium-modal-overlay" id="premium-alert-modal">
+    <div class="premium-modal-card">
+        <div style="display: flex; justify-content: flex-end; margin-bottom: 10px;">
+            <button class="delete-premium-btn" style="width: 32px; height: 32px; border-radius: 50%; font-size: 16px;" onclick="closePremiumAlert()">&times;</button>
+        </div>
+        <div class="premium-modal-circle" id="modal-icon-node">
+            <i class="fa-solid fa-check"></i>
+        </div>
+        <h3 class="premium-modal-title" id="modal-title-node">Guul! 🎉</h3>
+        <p class="premium-modal-message" id="modal-message-node">Xogta waa la kaydiyay barnaamijka.</p>
+        <button class="btn" style="background: var(--premium-blue-glow);" onclick="closePremiumAlert()">OK</button>
+    </div>
+</div>
+
+<!-- LIVE DYNAMIC EDIT MODAL PANEL -->
+<div class="premium-modal-overlay" id="premium-edit-modal">
+    <div class="premium-modal-card" style="text-align: left;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h3 class="premium-modal-title" style="margin-bottom: 0; display: flex; align-items: center; gap: 10px;">
+                <i class="fa fa-pen-to-square" style="color: #0055ff;"></i> Beddel Xogta (Edit Record)
+            </h3>
+            <button class="delete-premium-btn" style="width: 32px; height: 32px; border-radius: 50%; font-size: 16px; margin: 0;" onclick="closePremiumEdit()">&times;</button>
+        </div>
+        <input id="edit-node-id" type="hidden">
+        <input id="edit-node-type" type="hidden">
+        
+        <label style="font-size:12px; font-weight:700; margin-left:12px; color:var(--text-muted);">Magaca Dhammaystiran</label>
+        <input id="edit-node-name" placeholder="Enter Name">
+        
+        <div id="edit-student-fields">
+            <label style="font-size:12px; font-weight:700; margin-left:12px; color:var(--text-muted);">Fasalka / Maalinta</label>
+            <select id="edit-node-class">
+                <option value="5aad">5aad</option>
+                <option value="6aad">6aad</option>
+                <option value="7aad">7aad</option>
+                <option value="8aad">8aad</option>
+                <option value="Form One">Form One</option>
+                <option value="Form Two">Form Two</option>
+                <option value="Form Three">Form Three</option>
+                <option value="Jicmo">Jicmo</option>
+                <option value="Khamiis">Khamiis</option>
+                <option value="None">None</option>
+            </select>
+            
+            <label style="font-size:12px; font-weight:700; margin-left:12px; color:var(--text-muted);">Goobta / Degmada (Banaadir)</label>
+            <select id="edit-node-location">
+                <option value="Daynile">Daynile</option>
+                <option value="Cabdiaziz">Cabdiaziz</option>
+                <option value="Boondheere">Boondheere</option>
+                <option value="Dharkenley">Dharkenley</option>
+                <option value="Hamar Jajab">Hamar Jajab</option>
+                <option value="Hamar Weyne">Hamar Weyne</option>
+                <option value="Heliwaa">Heliwaa</option>
+                <option value="Hodan">Hodan</option>
+                <option value="Hawlwadaag">Hawlwadaag</option>
+                <option value="Kaxda">Kaxda</option>
+                <option value="Kaaran">Kaaran</option>
+                <option value="Shangaani">Shangaani</option>
+                <option value="Shibis">Shibis</option>
+                <option value="Waaberi">Waaberi</option>
+                <option value="Wadajir">Wadajir</option>
+                <option value="Warta Nabadda">Warta Nabadda</option>
+                <option value="Yaaqshiid">Yaaqshiid</option>
+                <option value="None">None</option>
+            </select>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+                <div>
+                    <label style="font-size:12px; font-weight:700; margin-left:12px; color:var(--text-muted);">Da'da</label>
+                    <input id="edit-node-age" type="number" placeholder="Age">
+                </div>
+                <div>
+                    <label style="font-size:12px; font-weight:700; margin-left:12px; color:var(--text-muted);">Telefoonka</label>
+                    <input id="edit-node-phone" type="tel" placeholder="Phone">
+                </div>
+            </div>
+        </div>
+        
+        <div id="edit-teacher-fields" style="display: none;">
+            <label style="font-size:12px; font-weight:700; margin-left:12px; color:var(--text-muted);">Gaarka (Gender)</label>
+            <select id="edit-node-gender">
+                <option value="Man">Man</option>
+                <option value="Woman">Woman</option>
+            </select>
+            
+            <label style="font-size:12px; font-weight:700; margin-left:12px; color:var(--text-muted);">Maaddada (Subject)</label>
+            <select id="edit-node-subject">
+                <option value="Tarbiya">Tarbiya</option>
+                <option value="Geography">Geography</option>
+                <option value="Biology">Biology</option>
+                <option value="Somali">Somali</option>
+                <option value="Math">Math</option>
+                <option value="English">English</option>
+                <option value="Chemistry">Chemistry</option>
+                <option value="Physics">Physics</option>
+                <option value="Business">Business</option>
+                <option value="Carbi (Arabic)">Carbi (Arabic)</option>
+            </select>
+            
+            <label style="font-size:12px; font-weight:700; margin-left:12px; color:var(--text-muted);">Telefoonka (Phone)</label>
+            <input id="edit-node-phone" type="tel" placeholder="Phone Number (Optional)">
+        </div>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 10px;">
+            <button class="btn" style="background: rgba(0,0,0,0.05); color: var(--text-main); border: 1px solid var(--glass-border);" onclick="closePremiumEdit()">Ka Noqo</button>
+            <button class="btn" style="background: var(--premium-blue-glow);" onclick="savePremiumEdit()">Kaydi Meesha</button>
+        </div>
+    </div>
+</div>
+
+<!-- BACKGROUND INFRASTRUCTURE -->
+<div class="background-orchestrator">
+    <div class="ambient-orb orb-1"></div>
+    <div class="ambient-orb orb-2"></div>
+    <div class="ambient-orb orb-3"></div>
+</div>
+
+<!-- SIDEBAR -->
+<div class="sidebar" id="app-sidebar">
+    <div class="sidebar-top">
+        <div class="logo-enclosure">
+            <div class="logo-ring"><i class="fa-solid fa-graduation-cap"></i></div>
+            <div class="brand">
+                <span class="brand-title">DALBILE primary and secondary school</span>
+                <span class="brand-subtitle"><b>HOYGA WAX ASHADA DAL KADHID</b></span>
+            </div>
+        </div>
+        <div class="nav-menu">
+            <button id="btn-portal" class="active" onclick="show('portal')"><i class="fa fa-id-card"></i> Self Portal</button>
+            <button id="btn-teachers" onclick="show('teachers')"><i class="fa fa-chalkboard-teacher"></i> Teachers</button>
+            <button id="btn-students" onclick="show('students')"><i class="fa fa-user-graduate"></i> Students</button>
+            <button id="btn-kayd" onclick="show('kayd')"><i class="fa fa-database"></i> Kayd</button>
+            <button id="btn-exams" onclick="show('exams')"><i class="fa fa-file-alt"></i> Exams</button>
+            <button id="btn-settings" onclick="show('settings')"><i class="fa fa-cog"></i> Settings</button>
+        </div>
+    </div>
+</div>
+
+<!-- CONTAINER STAGE -->
+<div class="main">
+
+    <!-- TOP NAVBAR -->
+    <div class="top-navbar">
+        <div class="welcome-msg">
+            <h1>DALBILE primary and secondary school 🚀</h1>
+            <p><strong>HOYGA WAX ASHADA DAL KADHID</strong></p>
+        </div>
+    </div>
+
+    <!-- 1. SELF SERVICE PORTAL -->
+    <div id="portal" class="view-card glass-portal active-view">
+        <h2><i class="fa fa-id-card" style="color: #00c6ff;"></i> DALBILE Registration Desk</h2>
+        <div class="content-split">
+            <div class="portal-card">
+                <div class="portal-tabs">
+                    <div id="tab-s" class="p-tab active" onclick="setPortalType('student')">Iam Student</div>
+                    <div id="tab-t" class="p-tab" onclick="setPortalType('teacher')">Iam Teacher</div>
+                </div>
+                <input id="p-name" placeholder="Enter Full Name">
+                
+                <div id="student-selectors">
+                    <select id="p-student-option">
+                        <option value="" disabled selected>Dooro Fasalka/Maalinta</option>
+                        <option value="5aad">5aad</option>
+                        <option value="6aad">6aad</option>
+                        <option value="7aad">7aad</option>
+                        <option value="8aad">8aad</option>
+                        <option value="Form One">Form One</option>
+                        <option value="Form Two">Form Two</option>
+                        <option value="Form Three">Form Three</option>
+                        <option value="Jicmo">Jicmo</option>
+                        <option value="Khamiis">Khamiis</option>
+                        <option value="None">None</option>
+                    </select>
+
+                    <select id="p-student-location">
+                        <option value="" disabled selected>Dooro Goobta / Degmada</option>
+                        <option value="Daynile">Daynile</option>
+                        <option value="Cabdiaziz">Cabdiaziz</option>
+                        <option value="Boondheere">Boondheere</option>
+                        <option value="Dharkenley">Dharkenley</option>
+                        <option value="Hamar Jajab">Hamar Jajab</option>
+                        <option value="Hamar Weyne">Hamar Weyne</option>
+                        <option value="Heliwaa">Heliwaa</option>
+                        <option value="Hodan">Hodan</option>
+                        <option value="Hawlwadaag">Hawlwadaag</option>
+                        <option value="Kaxda">Kaxda</option>
+                        <option value="Kaaran">Kaaran</option>
+                        <option value="Shangaani">Shangaani</option>
+                        <option value="Shibis">Shibis</option>
+                        <option value="Waaberi">Waaberi</option>
+                        <option value="Wadajir">Wadajir</option>
+                        <option value="Warta Nabadda">Warta Nabadda</option>
+                        <option value="Yaaqshiid">Yaaqshiid</option>
+                        <option value="None">None</option>
+                    </select>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 0px;">
+                        <input id="p-student-age" type="number" placeholder="Age (Da'da)">
+                        <input id="p-student-phone" type="tel" value="+252 61" placeholder="Phone Number">
+                    </div>
+                </div>
+                
+                <div id="teacher-selectors" style="display:none;">
+                    <select id="p-teacher-gender">
+                        <option value="" disabled selected>Select Gender</option>
+                        <option value="Man">Man</option>
+                        <option value="Woman">Woman</option>
+                    </select>
+                    <select id="p-teacher-subject">
+                        <option value="" disabled selected>Select Subject</option>
+                        <option value="Tarbiya">Tarbiya</option>
+                        <option value="Geography">Geography</option>
+                        <option value="Biology">Biology</option>
+                        <option value="Somali">Somali</option>
+                        <option value="Math">Math</option>
+                        <option value="English">English</option>
+                        <option value="Chemistry">Chemistry</option>
+                        <option value="Physics">Physics</option>
+                        <option value="Business">Business</option>
+                        <option value="Carbi (Arabic)">Carbi (Arabic)</option>
+                    </select>
+                    <input id="p-teacher-phone" type="tel" value="+252 61" placeholder="Phone Number (Optional)">
+                </div>
+                <button id="portal-submit-btn" class="btn" style="background: var(--premium-blue-glow);" onclick="portalRegister()"><i class="fa fa-check-circle"></i> Is Diiwangali</button>
+            </div>
+            
+            <div class="search-line-container">
+                <h4 style="font-size: 14px; font-weight: 800; margin-bottom: 12px;">
+                    <i class="fa fa-magnifying-glass" style="color: #ff0055;"></i> Toos u Raadi (Live Search Engine)
+                </h4>
+                <div class="search-line-bar">
+                    <i class="fa fa-search"></i>
+                    <input id="inline-search-input" placeholder="Ku qor magaca, fasalka ama degmada..." oninput="executeInlineSearch()">
+                </div>
+                <div id="inline-search-results" class="list-container" style="max-height: 200px; margin-top: 12px; display: none;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. TEACHERS PANEL -->
+    <div id="teachers" class="view-card glass-teachers">
+        <h2><i class="fa fa-chalkboard-teacher" style="color: #ff9500;"></i> DALBILE Teachers</h2>
+        <div class="form-box">
+            <input id="tname" placeholder="Teacher Name">
+            <select id="tgender">
+                <option value="Man">Man</option>
+                <option value="Woman">Woman</option>
+            </select>
+            <select id="tsubject">
+                <option value="Tarbiya">Tarbiya</option>
+                <option value="Geography">Geography</option>
+                <option value="Biology">Biology</option>
+                <option value="Somali">Somali</option>
+                <option value="Math">Math</option>
+                <option value="English">English</option>
+                <option value="Chemistry">Chemistry</option>
+                <option value="Physics">Physics</option>
+                <option value="Business">Business</option>
+                <option value="Carbi (Arabic)">Carbi (Arabic)</option>
+            </select>
+            <input id="tphone" type="tel" value="+252 61" placeholder="Phone Number (Optional)">
+            <button class="btn" style="background: var(--vibrant-yellow); color:black;" onclick="addTeacher()"><i class="fa fa-plus"></i> Add Teacher</button>
+        </div>
+    </div>
+
+    <!-- 3. STUDENTS PANEL -->
+    <div id="students" class="view-card glass-students">
+        <h2><i class="fa fa-user-graduate" style="color: #ff2d55;"></i> DALBILE Students</h2>
+        <div class="form-box">
+            <input id="sname" placeholder="Student Name">
+            <select id="sclass">
+                <option value="5aad">5aad</option>
+                <option value="6aad">6aad</option>
+                <option value="7aad">7aad</option>
+                <option value="8aad">8aad</option>
+                <option value="Form One">Form One</option>
+                <option value="Form Two">Form Two</option>
+                <option value="Form Three">Form Three</option>
+                <option value="Jicmo">Jicmo</option>
+                <option value="Khamiis">Khamiis</option>
+                <option value="None">None</option>
+            </select>
+
+            <select id="slocation">
+                <option value="Daynile">Daynile</option>
+                <option value="Cabdiaziz">Cabdiaziz</option>
+                <option value="Boondheere">Boondheere</option>
+                <option value="Dharkenley">Dharkenley</option>
+                <option value="Hamar Jajab">Hamar Jajab</option>
+                <option value="Hamar Weyne">Hamar Weyne</option>
+                <option value="Heliwaa">Heliwaa</option>
+                <option value="Hodan">Hodan</option>
+                <option value="Hawlwadaag">Hawlwadaag</option>
+                <option value="Kaxda">Kaxda</option>
+                <option value="Kaaran">Kaaran</option>
+                <option value="Shangaani">Shangaani</option>
+                <option value="Shibis">Shibis</option>
+                <option value="Waaberi">Waaberi</option>
+                <option value="Wadajir">Wadajir</option>
+                <option value="Warta Nabadda">Warta Nabadda</option>
+                <option value="Yaaqshiid">Yaaqshiid</option>
+                <option value="None">None</option>
+            </select>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 0px;">
+                <input id="sage" type="number" placeholder="Age (Da'da)">
+                <input id="sphone" type="tel" value="+252 61" placeholder="Phone Number">
+            </div>
+            <button class="btn" style="background: var(--vibrant-red);" onclick="addStudent()"><i class="fa fa-plus"></i> Add Student</button>
+        </div>
+    </div>
+
+    <!-- 4. CENTRALIZED STORAGE PANEL (KAYD VAULT) -->
+    <div id="kayd" class="view-card glass-kayd">
+        <h2><i class="fa fa-database" style="color: #0072ff;"></i> Nidaamka Kaydka Guud</h2>
+        
+        <div class="stat-banner">
+            <div class="stat-card">
+                <i class="fa fa-user-graduate" style="color: #ff2d55;"></i>
+                <div class="stat-info">
+                    <span class="num" id="count-students">0</span>
+                    <span class="lbl">Ardayda Kaydsan</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <i class="fa fa-chalkboard-teacher" style="color: #ff9500;"></i>
+                <div class="stat-info">
+                    <span class="num" id="count-teachers">0</span>
+                    <span class="lbl">Macalimiinta Kaydsan</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- TWO DEDICATED LANES GENERATED SIDE BY SIDE -->
+        <div class="all-in-one-grid">
+            <!-- LANE 1: STUDENTS -->
+            <div style="background: rgba(255,255,255,0.2); padding: 24px; border-radius: 32px; border: 1px solid var(--glass-border);">
+                <h3 style="font-size:16px; margin-bottom:20px; font-weight:800; display:flex; align-items:center; gap:8px;">
+                    <i class="fa fa-users" style="color: #ff2d55;"></i> Xogta Ardayda
+                </h3>
+                <div id="vaultStudentList" class="list-container"></div>
+            </div>
+            
+            <!-- LANE 2: TEACHERS -->
+            <div style="background: rgba(255,255,255,0.2); padding: 24px; border-radius: 32px; border: 1px solid var(--glass-border);">
+                <h3 style="font-size:16px; margin-bottom:20px; font-weight:800; display:flex; align-items:center; gap:8px;">
+                    <i class="fa fa-chalkboard-teacher" style="color: #ff9500;"></i> Xogta Macalimiinta
+                </h3>
+                <div id="vaultTeacherList" class="list-container"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 5. EXAMS PANEL -->
+    <div id="exams" class="view-card glass-exams">
+        <h2><i class="fa fa-file-alt" style="color: #ff0055;"></i> Examination Schedule</h2>
+        <div class="capsule-grid">
+            <div class="grid-capsule">
+                <h4>First Exam</h4>
+                <div style="margin-top:10px;"><span>Weight: 15%</span></div>
+            </div>
+            <div class="grid-capsule">
+                <h4>Shahri Exam</h4>
+                <div style="margin-top:10px;"><span>Weight: 25%</span></div>
+            </div>
+            <div class="grid-capsule">
+                <h4>Terms Exam</h4>
+                <div style="margin-top:10px;"><span>Weight: 40%</span></div>
+            </div>
+            <div class="grid-capsule">
+                <h4>Final Exam</h4>
+                <div style="margin-top:10px;"><span>Weight: 100%</span></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 6. SETTINGS PANEL -->
+    <div id="settings" class="view-card glass-settings">
+        <h2><i class="fa fa-cog" style="color: #00b09b;"></i> Configuration System</h2>
+        <div class="content-split">
+            <div class="form-box">
+                <h4 style="margin-bottom: 14px; font-weight: 800;"><i class="fa fa-sliders-h"></i> Doorashada Habka (Theme)</h4>
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 30px;">
+                    <button class="btn" style="background: #1d1d1f; color: white;" onclick="setThemeMode('dark')"><i class="fa fa-moon"></i> Dark</button>
+                    <button class="btn" style="background: #ffffff; color: #1d1d1f; border: 1px solid var(--glass-border);" onclick="setThemeMode('light')"><i class="fa fa-sun"></i> Light</button>
+                    <button class="btn" style="background: linear-gradient(135deg, #12030d 0%, #cc1133 100%); color: white;" onclick="setThemeMode('blackberry')"><i class="fa fa-heart"></i> Berry & Red</button>
+                </div>
+                <h4 style="margin-bottom: 14px; font-weight: 800;"><i class="fa fa-palette"></i> Ambient Background Aura Engine</h4>
+                <select id="bg-selector" onchange="changeBackgroundTheme(this.value)">
+                    <option value="aura">Default Neon Aura (Glow)</option>
+                    <option value="midnight">Midnight Tech Blue</option>
+                    <option value="emerald">Emerald Matrix Green</option>
+                    <option value="sunset">Sunset Cyber Crimson</option>
+                    <option value="blackberry">Blackberry Red Velvet</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- FLOATING BOTTOM NAVIGATION BAR -->
+<div class="bottom-nav-wrapper" id="app-bottom-nav-wrapper">
+    <div class="bottom-navbar">
+        <button id="mbtn-portal" class="active" onclick="show('portal')"><i class="fa fa-id-card"></i> Portal</button>
+        <button id="mbtn-teachers" onclick="show('teachers')"><i class="fa fa-chalkboard-teacher"></i> Teachers</button>
+        <button id="mbtn-students" onclick="show('students')"><i class="fa fa-user-graduate"></i> Students</button>
+        <button id="mbtn-kayd" onclick="show('kayd')"><i class="fa fa-database"></i> Kayd</button>
+        <button id="mbtn-exams" onclick="show('exams')"><i class="fa fa-file-alt"></i> Exams</button>
+        <button id="mbtn-settings" onclick="show('settings')"><i class="fa fa-cog"></i> Settings</button>
+    </div>
+</div>
+
+<!-- FIREBASE CONNECTOR -->
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-database-compat.js"></script>
+
+<script>
+const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_PROJECT.firebaseapp.com",
+    databaseURL: "https://YOUR_PROJECT.firebaseio.com",
+    projectId: "YOUR_PROJECT",
+};
+
+const isFirebaseSetup = firebaseConfig.apiKey !== "YOUR_API_KEY" && !firebaseConfig.databaseURL.includes("YOUR_PROJECT");
+
+let db, studentsRef, teachersRef;
+let localStudents = {};
+let localTeachers = {};
+
+// Helper: normalize a phone number into a dial-safe string (strip spaces/dashes)
+function toDialablePhone(phone) {
+    if (!phone) return "";
+    return phone.replace(/[^0-9+]/g, "");
+}
+
+// Helper: validate phone number (must have at least 7 digits after normalization)
+function isValidPhone(phone) {
+    if (!phone || phone === "+252 61") return true; // optional field
+    let digits = phone.replace(/[^0-9]/g, "");
+    return digits.length >= 7;
+}
+
+// Helper: validate age (must be between 5 and 120)
+function isValidAge(age) {
+    if (!age) return false;
+    let ageNum = parseInt(age);
+    return ageNum >= 5 && ageNum <= 120;
+}
+
+if (isFirebaseSetup) {
+    firebase.initializeApp(firebaseConfig);
+    db = firebase.database();
+    studentsRef = db.ref("dalbile_students");
+    teachersRef = db.ref("dalbile_teachers");
+    
+    studentsRef.on("value", snap => {
+        localStudents = snap.val() || {};
+        renderAll();
+    });
+    teachersRef.on("value", snap => {
+        localTeachers = snap.val() || {};
+        renderAll();
+    });
+} else {
+    localStudents = JSON.parse(localStorage.getItem("localStudents")) || {};
+    localTeachers = JSON.parse(localStorage.getItem("localTeachers")) || {};
+    setTimeout(() => { renderAll(); }, 200);
+}
+
+function syncData() {
+    if (!isFirebaseSetup) {
+        localStorage.setItem("localStudents", JSON.stringify(localStudents));
+        localStorage.setItem("localTeachers", JSON.stringify(localTeachers));
+        renderAll();
+    }
+}
+
+// KEYBOARD FIX FUNCTION INTEGRATION
+// Attached once on load (event delegation via focusin/focusout) instead of being
+// re-attached on every render, which avoids duplicate listeners piling up.
+function initKeyboardWatcher() {
+    document.addEventListener('focusin', (e) => {
+        if (e.target.matches('input, select, textarea')) hideBottomNav();
+    });
+    document.addEventListener('focusout', (e) => {
+        if (e.target.matches('input, select, textarea')) showBottomNav();
+    });
+}
+
+function hideBottomNav() {
+    const bottomNavWrapper = document.getElementById('app-bottom-nav-wrapper');
+    if(bottomNavWrapper) {
+        bottomNavWrapper.style.setProperty('display', 'none', 'important');
+    }
+}
+
+function showBottomNav() {
+    const bottomNavWrapper = document.getElementById('app-bottom-nav-wrapper');
+    setTimeout(() => {
+        if(window.innerWidth <= 768 && bottomNavWrapper) {
+            bottomNavWrapper.style.setProperty('display', 'flex', 'important');
+        }
+    }, 100);
+}
+
+// OPEN STUDENT PROFILE MODAL
+function openStudentProfile(id) {
+    const data = localStudents[id];
+    if(!data) return;
+    
+    document.getElementById('p-modal-name').innerText = data.name || 'N/A';
+    document.getElementById('p-modal-class').innerText = "Fasalka: " + (data.class || 'N/A');
+    document.getElementById('p-modal-location').innerText = data.location || 'Daynile';
+    document.getElementById('p-modal-age').innerText = data.age ? `${data.age} Sano` : 'N/A';
+    
+    const phoneNum = data.phone || '+252 61';
+    document.getElementById('p-modal-phone').innerText = phoneNum;
+    document.getElementById('p-modal-avatar').innerText = data.name ? data.name.charAt(0).toUpperCase() : 'S';
+    document.getElementById('p-modal-call-link').href = "tel:" + toDialablePhone(phoneNum);
+    
+    document.getElementById('premium-profile-modal').style.display = "flex";
+}
+
+function closeStudentProfile() {
+    document.getElementById('premium-profile-modal').style.display = "none";
+}
+
+function showPremiumAlert(title, message, type = 'success') {
+    const modal = document.getElementById('premium-alert-modal');
+    const titleNode = document.getElementById('modal-title-node');
+    const msgNode = document.getElementById('modal-message-node');
+    const iconNode = document.getElementById('modal-icon-node');
+    
+    titleNode.innerText = title;
+    msgNode.innerText = message;
+    
+    if (type === 'error') {
+        iconNode.style.background = "linear-gradient(135deg, #ff2d55 0%, #ff6b8b 100%)";
+        iconNode.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i>';
+    } else {
+        iconNode.style.background = "linear-gradient(135deg, #00b09b 0%, #96c93d 100%)";
+        iconNode.innerHTML = '<i class="fa-solid fa-check"></i>';
+    }
+    modal.style.display = "flex";
+}
+
+function closePremiumAlert() {
+    document.getElementById('premium-alert-modal').style.display = "none";
+}
+
+/* INTERACTIVE EDITING ARCHITECTURE */
+function openPremiumEdit(id, type) {
+    const modal = document.getElementById('premium-edit-modal');
+    document.getElementById('edit-node-id').value = id;
+    document.getElementById('edit-node-type').value = type;
+    
+    if(type === 'student') {
+        document.getElementById('edit-student-fields').style.display = "block";
+        document.getElementById('edit-teacher-fields').style.display = "none";
+        
+        let data = localStudents[id];
+        document.getElementById('edit-node-name').value = data.name || '';
+        document.getElementById('edit-node-class').value = data.class || '5aad';
+        document.getElementById('edit-node-location').value = data.location || 'Daynile';
+        document.getElementById('edit-node-age').value = data.age || '';
+        document.getElementById('edit-node-phone').value = data.phone || '+252 61';
+    } else {
+        document.getElementById('edit-student-fields').style.display = "none";
+        document.getElementById('edit-teacher-fields').style.display = "block";
+        
+        let data = localTeachers[id];
+        document.getElementById('edit-node-name').value = data.name || '';
+        document.getElementById('edit-node-gender').value = data.gender || 'Man';
+        document.getElementById('edit-node-subject').value = data.subject || 'Tarbiya';
+        document.getElementById('edit-node-phone').value = data.phone || '+252 61';
+    }
+    modal.style.display = "flex";
+}
+
+function closePremiumEdit() {
+    document.getElementById('premium-edit-modal').style.display = "none";
+}
+
+function savePremiumEdit() {
+    const id = document.getElementById('edit-node-id').value;
+    const type = document.getElementById('edit-node-type').value;
+    const name = document.getElementById('edit-node-name').value.trim();
+    
+    if(name === "") return showPremiumAlert("Digniin ⚠️", "Magaca kama tagi kartid maran!", "error");
+    
+    if(type === 'student') {
+        const cls = document.getElementById('edit-node-class').value;
+        const loc = document.getElementById('edit-node-location').value;
+        const age = document.getElementById('edit-node-age').value.trim();
+        const phone = document.getElementById('edit-node-phone').value.trim();
+        
+        if(!age) return showPremiumAlert("Digniin ⚠️", "Da'da waa lagama maarmaan!", "error");
+        if(!isValidAge(age)) return showPremiumAlert("Digniin ⚠️", "Da'da waa inay tahay 5-120 sanadood u dhexeeya!", "error");
+        if(!isValidPhone(phone)) return showPremiumAlert("Digniin ⚠️", "Lambarka telefoonka waa inuu yahay sax (ugu yaraan 7 tiro)!", "error");
+        
+        if (isFirebaseSetup) {
+            db.ref("dalbile_students/" + id).update({ name: name, class: cls, location: loc, age: age, phone: phone });
+        } else {
+            localStudents[id] = { name: name, class: cls, location: loc, age: age, phone: phone };
+            syncData();
+        }
+    } else {
+        const gender = document.getElementById('edit-node-gender').value;
+        const sub = document.getElementById('edit-node-subject').value;
+        const phone = document.getElementById('edit-node-phone').value.trim();
+        
+        if(!isValidPhone(phone)) return showPremiumAlert("Digniin ⚠️", "Lambarka telefoonka waa inuu yahay sax (ugu yaraan 7 tiro)!", "error");
+        
+        if (isFirebaseSetup) {
+            db.ref("dalbile_teachers/" + id).update({ name: name, gender: gender, subject: sub, phone: phone });
+        } else {
+            localTeachers[id].name = name;
+            localTeachers[id].gender = gender;
+            localTeachers[id].subject = sub;
+            localTeachers[id].phone = phone;
+            syncData();
+        }
+    }
+    closePremiumEdit();
+    showPremiumAlert("Guul! 🎉", "Xogta si guul leh ayaa loo cusboonaysiiyay.");
+}
+
+let currentPortalType = 'student';
+
+function setThemeMode(mode) {
+    document.body.classList.remove('dark-mode', 'blackberry-red');
+    if(mode === 'dark') document.body.classList.add('dark-mode');
+    else if(mode === 'blackberry') document.body.classList.add('blackberry-red');
+    localStorage.setItem('dalbileThemeMode', mode);
+}
+
+function changeBackgroundTheme(themeName) {
+    const orb1 = document.querySelector('.orb-1');
+    const orb2 = document.querySelector('.orb-2');
+    const orb3 = document.querySelector('.orb-3');
+    if(themeName === 'aura') {
+        orb1.style.background = "rgba(255, 0, 85, 0.25)";
+        orb2.style.background = "rgba(0, 198, 255, 0.23)";
+        orb3.style.background = "rgba(138, 43, 226, 0.18)";
+    } else if(themeName === 'midnight') {
+        orb1.style.background = "rgba(0, 114, 255, 0.3)";
+        orb2.style.background = "rgba(0, 198, 255, 0.2)";
+        orb3.style.background = "rgba(10, 15, 45, 0.4)";
+    } else if(themeName === 'emerald') {
+        orb1.style.background = "rgba(0, 176, 155, 0.25)";
+        orb2.style.background = "rgba(150, 201, 61, 0.2)";
+        orb3.style.background = "rgba(0, 242, 254, 0.15)";
+    } else if(themeName === 'sunset') {
+        orb1.style.background = "rgba(255, 45, 85, 0.3)";
+        orb2.style.background = "rgba(255, 149, 0, 0.25)";
+        orb3.style.background = "rgba(138, 43, 226, 0.15)";
+    } else if(themeName === 'blackberry') {
+        orb1.style.background = "rgba(35, 5, 20, 0.6)";
+        orb2.style.background = "rgba(220, 20, 60, 0.4)";
+        orb3.style.background = "rgba(255, 45, 85, 0.2)";
+    }
+    localStorage.setItem('dalbileBgTheme', themeName);
+}
+
+// Restore saved theme + background preferences on load
+function restoreSavedThemePreferences() {
+    const savedTheme = localStorage.getItem('dalbileThemeMode');
+    if (savedTheme) setThemeMode(savedTheme);
+
+    const savedBg = localStorage.getItem('dalbileBgTheme');
+    if (savedBg) {
+        changeBackgroundTheme(savedBg);
+        const bgSelector = document.getElementById('bg-selector');
+        if (bgSelector) bgSelector.value = savedBg;
+    }
+}
+
+function show(page){
+    const sections = ['portal', 'students', 'teachers', 'kayd', 'exams', 'settings'];
+    sections.forEach(sec => {
+        const element = document.getElementById(sec);
+        if(element) {
+            element.classList.remove('active-view');
+            element.style.display = "none";
+        }
+    });
+    
+    const activeElement = document.getElementById(page);
+    if(activeElement) activeElement.classList.add('active-view');
+
+    document.querySelectorAll('.nav-menu button').forEach(btn => btn.classList.remove('active'));
+    const targetedBtn = document.getElementById(`btn-${page}`);
+    if(targetedBtn) targetedBtn.classList.add('active');
+    
+    document.querySelectorAll('.bottom-navbar button').forEach(btn => btn.classList.remove('active'));
+    const targetedMobBtn = document.getElementById(`mbtn-${page}`);
+    if(targetedMobBtn) targetedMobBtn.classList.add('active');
+}
+
+function setPortalType(type) {
+    currentPortalType = type;
+    document.getElementById('tab-s').classList.remove('active');
+    document.getElementById('tab-t').classList.remove('active');
+    const studentBox = document.getElementById('student-selectors');
+    const teacherBox = document.getElementById('teacher-selectors');
+
+    if(type === 'student') {
+        document.getElementById('tab-s').classList.add('active');
+        studentBox.style.display = "block";
+        teacherBox.style.display = "none";
+    } else {
+        document.getElementById('tab-t').classList.add('active');
+        studentBox.style.display = "none";
+        teacherBox.style.display = "block";
+    }
+}
+
+function portalRegister() {
+    let nameVal = document.getElementById('p-name').value.trim();
+    if(nameVal === "") return showPremiumAlert("Digniin ⚠️", "Fadlan qor magacaaga!", "error");
+    
+    if(currentPortalType === 'student') {
+        let optionVal = document.getElementById('p-student-option').value;
+        let locVal = document.getElementById('p-student-location').value;
+        let ageVal = document.getElementById('p-student-age').value.trim();
+        let phoneVal = document.getElementById('p-student-phone').value.trim();
+        
+        if(!optionVal) return showPremiumAlert("Digniin ⚠️", "Dooro fasal!", "error");
+        if(!locVal) return showPremiumAlert("Digniin ⚠️", "Dooro degmada aad dagan tahay!", "error");
+        if(!ageVal) return showPremiumAlert("Digniin ⚠️", "Fadlan qor da'da ardayga!", "error");
+        if(!isValidAge(ageVal)) return showPremiumAlert("Digniin ⚠️", "Da'da waa inay tahay 5-120 sanadood u dhexeeya!", "error");
+        if(phoneVal === "" || phoneVal === "+252 61") return showPremiumAlert("Digniin ⚠️", "Fadlan buuxi lambarka telefoonka!", "error");
+        if(!isValidPhone(phoneVal)) return showPremiumAlert("Digniin ⚠️", "Lambarka telefoonka waa inuu yahay sax (ugu yaraan 7 tiro)!", "error");
+        
+        if (isFirebaseSetup) {
+            studentsRef.push({ name: nameVal, class: optionVal, location: locVal, age: ageVal, phone: phoneVal });
+        } else {
+            let id = "local_" + Date.now() + "_" + Math.random().toString(36).slice(2, 8);
+            localStudents[id] = { name: nameVal, class: optionVal, location: locVal, age: ageVal, phone: phoneVal };
+            syncData();
+        }
+        document.getElementById('p-student-age').value = "";
+        document.getElementById('p-student-phone').value = "+252 61";
+    } else {
+        let genderVal = document.getElementById('p-teacher-gender').value;
+        let subjectVal = document.getElementById('p-teacher-subject').value;
+        let phoneVal = document.getElementById('p-teacher-phone').value.trim();
+        
+        if(!genderVal || !subjectVal) return showPremiumAlert("Digniin ⚠️", "Buuxi xogta macalinka!", "error");
+        
+        if (isFirebaseSetup) {
+            teachersRef.push({ name: nameVal, gender: genderVal, subject: subjectVal, phone: phoneVal || "" });
+        } else {
+            let id = "local_" + Date.now() + "_" + Math.random().toString(36).slice(2, 8);
+            localTeachers[id] = { name: nameVal, gender: genderVal, subject: subjectVal, phone: phoneVal || "" };
+            syncData();
+        }
+        document.getElementById('p-teacher-phone').value = "+252 61";
+    }
+    showPremiumAlert("Guul! 🎉", "Xogta si guul leh ayaa loo kaydiyay.");
+    document.getElementById('p-name').value = "";
+}
+
+function addStudent(){
+    let sname = document.getElementById("sname");
+    let sclass = document.getElementById("sclass");
+    let slocation = document.getElementById("slocation");
+    let sage = document.getElementById("sage");
+    let sphone = document.getElementById("sphone");
+    
+    if(sname.value.trim() === "") return showPremiumAlert("Digniin ⚠️", "Qor magaca ardayga!", "error");
+    if(sage.value.trim() === "") return showPremiumAlert("Digniin ⚠️", "Fadlan qor da'da!", "error");
+    if(!isValidAge(sage.value)) return showPremiumAlert("Digniin ⚠️", "Da'da waa inay tahay 5-120 sanadood u dhexeeya!", "error");
+    if(sphone.value.trim() === "" || sphone.value.trim() === "+252 61") return showPremiumAlert("Digniin ⚠️", "Fadlan buuxi lambarka telefoonka!", "error");
+    if(!isValidPhone(sphone.value)) return showPremiumAlert("Digniin ⚠️", "Lambarka telefoonka waa inuu yahay sax (ugu yaraan 7 tiro)!", "error");
+    
+    if (isFirebaseSetup) {
+        studentsRef.push({ name: sname.value, class: sclass.value, location: slocation.value, age: sage.value, phone: sphone.value });
+    } else {
+        let id = "local_" + Date.now() + "_" + Math.random().toString(36).slice(2, 8);
+        localStudents[id] = { name: sname.value, class: sclass.value, location: slocation.value, age: sage.value, phone: sphone.value };
+        syncData();
+    }
+    showPremiumAlert("Guul! 🎉", "Ardayga cusub waa la kaydiyay.");
+    sname.value = "";
+    sage.value = "";
+    sphone.value = "+252 61";
+}
+
+function addTeacher(){
+    let tname = document.getElementById("tname");
+    let tgender = document.getElementById("tgender");
+    let tsubject = document.getElementById("tsubject");
+    let tphone = document.getElementById("tphone") ? document.getElementById("tphone").value.trim() : "";
+    
+    if(tname.value.trim() === "") return showPremiumAlert("Digniin ⚠️", "Qor magaca macalinka!", "error");
+    
+    if (isFirebaseSetup) {
+        teachersRef.push({ name: tname.value, gender: tgender.value, subject: tsubject.value, phone: tphone || "" });
+    } else {
+        let id = "local_" + Date.now() + "_" + Math.random().toString(36).slice(2, 8);
+        localTeachers[id] = { name: tname.value, gender: tgender.value, subject: tsubject.value, phone: tphone || "" };
+        syncData();
+    }
+    showPremiumAlert("Guul! 🎉", "Macalinka cusub waa la kaydiyay.");
+    tname.value = "";
+}
+
+function delStudent(id){ 
+    if (isFirebaseSetup) {
+        studentsRef.child(id).remove(); 
+    } else {
+        delete localStudents[id];
+        syncData();
+    }
+}
+function delTeacher(id){ 
+    if (isFirebaseSetup) {
+        teachersRef.child(id).remove(); 
+    } else {
+        delete localTeachers[id];
+        syncData();
+    }
+}
+
+function renderAll() {
+    let vaultListS = document.getElementById("vaultStudentList");
+    if(vaultListS) vaultListS.innerHTML = "";
+    
+    let sCount = 0;
+    for(let id in localStudents){
+        sCount++;
+        let ageStr = localStudents[id].age ? `${localStudents[id].age} Sano` : 'N/A';
+        let phoneStr = localStudents[id].phone ? localStudents[id].phone : '+252 61';
+        let dialPhone = toDialablePhone(phoneStr);
+        let locStr = localStudents[id].location ? localStudents[id].location : 'Daynile';
+        
+        let html = `<div class="item student-item-card">
+            <div class="item-text" onclick="openStudentProfile('${id}')" style="cursor: pointer; flex: 1;">
+                <span style="font-weight: 800; font-size: 16px; color: var(--text-main); letter-spacing: -0.3px;">🎓 ${localStudents[id].name}</span>
+                <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:5px;">
+                    <span style="background:rgba(0,85,255,0.08); color:#0072ff; padding:2px 8px; border-radius:12px; font-weight:700; font-size:10px;">Fasalka: ${localStudents[id].class}</span>
+                    <span style="background:rgba(138,43,226,0.08); color:#8a2be2; padding:2px 8px; border-radius:12px; font-weight:700; font-size:10px;">📍 ${locStr}</span>
+                    <span style="background:rgba(255,45,85,0.08); color:#ff2d55; padding:2px 8px; border-radius:12px; font-weight:700; font-size:10px;">Da'da: ${ageStr}</span>
+                    <span style="background:rgba(0,176,155,0.08); color:#00b09b; padding:2px 8px; border-radius:12px; font-weight:700; font-size:10px;"><i class="fa fa-phone"></i> ${phoneStr}</span>
+                </div>
+            </div>
+            <div class="action-box-controls">
+                <a href="tel:${dialPhone}" class="call-direct-btn" title="Wac Mobilka"><i class="fa fa-phone"></i></a>
+                <button class="edit-premium-btn" onclick="openPremiumEdit('${id}', 'student')"><i class="fa fa-pen"></i></button>
+                <button class="delete-premium-btn" onclick="delStudent('${id}')"><i class="fa fa-trash"></i></button>
+            </div>
+        </div>`;
+        if(vaultListS) vaultListS.innerHTML += html;
+    }
+    document.getElementById("count-students").innerText = sCount;
+    
+    let vaultListT = document.getElementById("vaultTeacherList");
+    if(vaultListT) vaultListT.innerHTML = "";
+    
+    let tCount = 0;
+    for(let id in localTeachers){
+        tCount++;
+        let phoneStr = localTeachers[id].phone ? localTeachers[id].phone : '';
+        let dialPhone = toDialablePhone(phoneStr);
+        let phoneDisplay = phoneStr ? `<span style="background:rgba(0,176,155,0.08); color:#00b09b; padding:2px 10px; border-radius:12px; font-weight:700; font-size:11px;"><i class="fa fa-phone"></i> ${phoneStr}</span>` : '';
+        let callBtn = phoneStr && dialPhone ? `<a href="tel:${dialPhone}" class="call-direct-btn" title="Wac Macalinka"><i class="fa fa-phone"></i></a>` : '';
+        
+        let html = `<div class="item teacher-item-card">
+            <div class="item-text" style="flex: 1;">
+                <span style="font-weight: 800; font-size: 16px; color: var(--text-main); letter-spacing: -0.3px;">👨‍🏫 ${localTeachers[id].name}</span>
+                <div style="display:flex; gap:6px; margin-top:5px; flex-wrap:wrap;">
+                    <span style="background:rgba(255,149,0,0.1); color:#ff9500; padding:2px 10px; border-radius:12px; font-weight:700; font-size:11px;">Subject: ${localTeachers[id].subject}</span>
+                    <span style="background:rgba(0,0,0,0.04); color:var(--text-muted); padding:2px 10px; border-radius:12px; font-weight:600; font-size:11px;">Gender: ${localTeachers[id].gender || 'Man'}</span>
+                    ${phoneDisplay}
+                </div>
+            </div>
+            <div class="action-box-controls">
+                ${callBtn}
+                <button class="edit-premium-btn" onclick="openPremiumEdit('${id}', 'teacher')"><i class="fa fa-pen"></i></button>
+                <button class="delete-premium-btn" onclick="delTeacher('${id}')"><i class="fa fa-trash"></i></button>
+            </div>
+        </div>`;
+        if(vaultListT) vaultListT.innerHTML += html;
+    }
+    document.getElementById("count-teachers").innerText = tCount;
+}
+
+function executeInlineSearch() {
+    const query = document.getElementById('inline-search-input').value.toLowerCase().trim();
+    const resultsContainer = document.getElementById('inline-search-results');
+    resultsContainer.innerHTML = "";
+    
+    if(query === "") {
+        resultsContainer.style.display = "none";
+        return;
+    }
+
+    resultsContainer.style.display = "flex";
+    let foundMatch = false;
+
+    for(let id in localStudents) {
+        let loc = localStudents[id].location ? localStudents[id].location.toLowerCase() : 'daynile';
+        let phoneRaw = localStudents[id].phone ? localStudents[id].phone : '+252 61';
+        let phoneDigitsOnly = toDialablePhone(phoneRaw);
+        if(localStudents[id].name.toLowerCase().includes(query) || localStudents[id].class.toLowerCase().includes(query) || loc.includes(query) || phoneDigitsOnly.includes(query.replace(/[^0-9+]/g, ""))) {
+            foundMatch = true;
+            let ageStr = localStudents[id].age ? `${localStudents[id].age} Sano` : 'N/A';
+            let locStr = localStudents[id].location ? localStudents[id].location : 'Daynile';
+            let phoneStr = phoneRaw;
+            
+            resultsContainer.innerHTML += `<div class="item student-item-card">
+                <div class="item-text" onclick="openStudentProfile('${id}')" style="cursor: pointer; flex: 1;">
+                    <span style="font-weight: 800; font-size: 16px; color: var(--text-main); letter-spacing: -0.3px;">🎓 ${localStudents[id].name}</span>
+                    <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:4px;">
+                        <span style="background:rgba(0,85,255,0.08); color:#0072ff; padding:2px 8px; border-radius:12px; font-weight:700; font-size:10px;">Class: ${localStudents[id].class}</span>
+                        <span style="background:rgba(138,43,226,0.08); color:#8a2be2; padding:2px 8px; border-radius:12px; font-weight:700; font-size:10px;">📍 ${locStr}</span>
+                        <span style="background:rgba(0,176,155,0.08); color:#00b09b; padding:2px 8px; border-radius:12px; font-weight:700; font-size:10px;"><i class="fa fa-phone"></i> ${phoneStr}</span>
+                    </div>
+                </div>
+                <div class="action-box-controls">
+                    <a href="tel:${toDialablePhone(phoneStr)}" class="call-direct-btn"><i class="fa fa-phone"></i></a>
+                </div>
+            </div>`;
+        }
+    }
+
+    for(let id in localTeachers) {
+        if(localTeachers[id].name.toLowerCase().includes(query) || localTeachers[id].subject.toLowerCase().includes(query)) {
+            foundMatch = true;
+            resultsContainer.innerHTML += `<div class="item teacher-item-card">
+                <div class="item-text"><span style="font-weight: 800; font-size: 16px; color: var(--text-main); letter-spacing: -0.3px;">👨‍🏫 ${localTeachers[id].name}</span><span>Subject: ${localTeachers[id].subject}</span></div>
+            </div>`;
+        }
+    }
+    
+    if(!foundMatch) {
+        resultsContainer.innerHTML = `<p style="text-align:center; color: var(--text-muted); padding: 15px; font-size:13px;">Natiijo la heli waayay... ❌</p>`;
+    }
+}
+
+// Boot sequence: attach the keyboard watcher once, and restore saved preferences
+initKeyboardWatcher();
+restoreSavedThemePreferences();
+</script>
+
+<script src="script.js"></script>
+</body>
+</html>
