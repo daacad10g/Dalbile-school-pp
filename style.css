@@ -1,0 +1,750 @@
+<script>
+/* =========================
+   IBRAAHIM ²P.P.S - APP JS
+   ========================= */
+
+const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_PROJECT.firebaseapp.com",
+    databaseURL: "https://YOUR_PROJECT.firebaseio.com",
+    projectId: "YOUR_PROJECT",
+};
+
+const isFirebaseSetup =
+    typeof firebase !== "undefined" &&
+    firebaseConfig.apiKey !== "YOUR_API_KEY" &&
+    !firebaseConfig.databaseURL.includes("YOUR_PROJECT");
+
+let db = null, studentsRef = null, teachersRef = null;
+let localStudents = {};
+let localTeachers = {};
+let currentPortalType = 'student';
+let isAutoThemeOn = false;
+const ALL_THEME_CLASSES = ['dark-mode', 'blackberry-red', 'mono-theme', 'ocean-theme'];
+const systemDarkQuery = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
+
+/* =========================
+   INIT
+   ========================= */
+(function initApp() {
+    updateBrandText();
+    bindStaticEvents();
+    restoreTheme();
+    initDataSource();
+    initKeyboardWatcher();
+    show('portal');
+})();
+
+function initDataSource() {
+    try {
+        if (isFirebaseSetup) {
+            firebase.initializeApp(firebaseConfig);
+            db = firebase.database();
+            studentsRef = db.ref("dalbile_students");
+            teachersRef = db.ref("dalbile_teachers");
+
+            studentsRef.on("value", snap => {
+                localStudents = snap.val() || {};
+                renderAll();
+            });
+
+            teachersRef.on("value", snap => {
+                localTeachers = snap.val() || {};
+                renderAll();
+            });
+        } else {
+            localStudents = JSON.parse(localStorage.getItem("localStudents")) || {};
+            localTeachers = JSON.parse(localStorage.getItem("localTeachers")) || {};
+            renderAll();
+        }
+    } catch (e) {
+        console.error("Init error:", e);
+        localStudents = JSON.parse(localStorage.getItem("localStudents")) || {};
+        localTeachers = JSON.parse(localStorage.getItem("localTeachers")) || {};
+        renderAll();
+    }
+}
+
+function bindStaticEvents() {
+    if (systemDarkQuery && systemDarkQuery.addEventListener) {
+        systemDarkQuery.addEventListener('change', () => {
+            if (isAutoThemeOn) applyAutoTheme();
+        });
+    }
+
+    const bgSelector = document.getElementById('bg-selector');
+    if (bgSelector) {
+        bgSelector.addEventListener('change', function() {
+            changeBackgroundTheme(this.value);
+        });
+    }
+
+    const searchInput = document.getElementById('inline-search-input');
+    if (searchInput) {
+        searchInput.addEventListener('input', executeInlineSearch);
+    }
+
+    const modalOverlays = document.querySelectorAll('.premium-modal-overlay');
+    modalOverlays.forEach(overlay => {
+        overlay.addEventListener('click', function(e) {
+            if (e.target === this) this.style.display = "none";
+        });
+    });
+}
+
+/* =========================
+   BRAND TEXT
+   ========================= */
+function updateBrandText() {
+    document.querySelectorAll('.brand-title').forEach(el => {
+        el.textContent = 'IBRAAHIM ²P.P.S';
+    });
+
+    const topTitle = document.querySelector('.welcome-msg h1');
+    if (topTitle) topTitle.textContent = 'IBRAAHIM ²P.P.S 🚀';
+
+    document.title = 'IBRAAHIM ²P.P.S - Premium Mobile Management Hub';
+}
+
+/* =========================
+   STORAGE
+   ========================= */
+function syncData() {
+    if (!isFirebaseSetup) {
+        localStorage.setItem("localStudents", JSON.stringify(localStudents));
+        localStorage.setItem("localTeachers", JSON.stringify(localTeachers));
+        renderAll();
+    }
+}
+
+/* =========================
+   KEYBOARD / MOBILE NAV
+   ========================= */
+function initKeyboardWatcher() {
+    const inputElements = document.querySelectorAll('input, select, textarea');
+    inputElements.forEach(element => {
+        element.removeEventListener('focus', hideBottomNav);
+        element.removeEventListener('blur', showBottomNav);
+
+        element.addEventListener('focus', hideBottomNav);
+        element.addEventListener('blur', showBottomNav);
+    });
+}
+
+function hideBottomNav() {
+    const bottomNavWrapper = document.getElementById('app-bottom-nav-wrapper');
+    if (bottomNavWrapper && window.innerWidth <= 768) {
+        bottomNavWrapper.style.setProperty('display', 'none', 'important');
+    }
+}
+
+function showBottomNav() {
+    const bottomNavWrapper = document.getElementById('app-bottom-nav-wrapper');
+    setTimeout(() => {
+        if (window.innerWidth <= 768 && bottomNavWrapper) {
+            bottomNavWrapper.style.setProperty('display', 'flex', 'important');
+        }
+    }, 120);
+}
+
+/* =========================
+   MODALS
+   ========================= */
+function showPremiumAlert(title, message, type = 'success') {
+    const modal = document.getElementById('premium-alert-modal');
+    const titleNode = document.getElementById('modal-title-node');
+    const msgNode = document.getElementById('modal-message-node');
+    const iconNode = document.getElementById('modal-icon-node');
+
+    if (!modal || !titleNode || !msgNode || !iconNode) {
+        alert(title + "\n" + message);
+        return;
+    }
+
+    titleNode.innerText = title;
+    msgNode.innerText = message;
+
+    if (type === 'error') {
+        iconNode.style.background = "linear-gradient(135deg, #ff2d55 0%, #ff6b8b 100%)";
+        iconNode.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i>';
+    } else {
+        iconNode.style.background = "linear-gradient(135deg, #00b09b 0%, #96c93d 100%)";
+        iconNode.innerHTML = '<i class="fa-solid fa-check"></i>';
+    }
+
+    modal.style.display = "flex";
+}
+
+function closePremiumAlert() {
+    const modal = document.getElementById('premium-alert-modal');
+    if (modal) modal.style.display = "none";
+}
+
+function openStudentProfile(id) {
+    const data = localStudents[id];
+    if (!data) return;
+
+    const phoneNum = data.phone || '+252 61';
+
+    const nameEl = document.getElementById('p-modal-name');
+    const classEl = document.getElementById('p-modal-class');
+    const locationEl = document.getElementById('p-modal-location');
+    const ageEl = document.getElementById('p-modal-age');
+    const phoneEl = document.getElementById('p-modal-phone');
+    const avatarEl = document.getElementById('p-modal-avatar');
+    const callEl = document.getElementById('p-modal-call-link');
+    const modal = document.getElementById('premium-profile-modal');
+
+    if (nameEl) nameEl.innerText = data.name || 'N/A';
+    if (classEl) classEl.innerText = "Fasalka: " + (data.class || 'N/A');
+    if (locationEl) locationEl.innerText = data.location || 'Daynile';
+    if (ageEl) ageEl.innerText = data.age ? `${data.age} Sano` : 'N/A';
+    if (phoneEl) phoneEl.innerText = phoneNum;
+    if (avatarEl) avatarEl.innerText = data.name ? data.name.charAt(0).toUpperCase() : 'S';
+    if (callEl) callEl.href = "tel:" + phoneNum;
+    if (modal) modal.style.display = "flex";
+}
+
+function closeStudentProfile() {
+    const modal = document.getElementById('premium-profile-modal');
+    if (modal) modal.style.display = "none";
+}
+
+/* =========================
+   EDIT SYSTEM
+   ========================= */
+function openPremiumEdit(id, type) {
+    const modal = document.getElementById('premium-edit-modal');
+    if (!modal) return;
+
+    document.getElementById('edit-node-id').value = id;
+    document.getElementById('edit-node-type').value = type;
+
+    if (type === 'student') {
+        document.getElementById('edit-student-fields').style.display = "block";
+        document.getElementById('edit-teacher-fields').style.display = "none";
+
+        const data = localStudents[id] || {};
+        document.getElementById('edit-node-name').value = data.name || '';
+        document.getElementById('edit-node-class').value = data.class || '5aad';
+        document.getElementById('edit-node-location').value = data.location || 'Daynile';
+        document.getElementById('edit-node-age').value = data.age || '';
+        document.getElementById('edit-node-phone').value = data.phone || '+252 61';
+    } else {
+        document.getElementById('edit-student-fields').style.display = "none";
+        document.getElementById('edit-teacher-fields').style.display = "block";
+
+        const data = localTeachers[id] || {};
+        document.getElementById('edit-node-name').value = data.name || '';
+        document.getElementById('edit-node-subject').value = data.subject || 'Tarbiya';
+    }
+
+    modal.style.display = "flex";
+}
+
+function closePremiumEdit() {
+    const modal = document.getElementById('premium-edit-modal');
+    if (modal) modal.style.display = "none";
+}
+
+function savePremiumEdit() {
+    const id = document.getElementById('edit-node-id').value;
+    const type = document.getElementById('edit-node-type').value;
+    const name = document.getElementById('edit-node-name').value.trim();
+
+    if (name === "") {
+        return showPremiumAlert("Digniin ⚠️", "Magaca kama tagi kartid maran!", "error");
+    }
+
+    if (type === 'student') {
+        const cls = document.getElementById('edit-node-class').value;
+        const loc = document.getElementById('edit-node-location').value;
+        const age = document.getElementById('edit-node-age').value.trim();
+        const phone = document.getElementById('edit-node-phone').value.trim();
+
+        if (isFirebaseSetup) {
+            db.ref("dalbile_students/" + id).update({
+                name: name,
+                class: cls,
+                location: loc,
+                age: age,
+                phone: phone
+            });
+        } else {
+            localStudents[id] = { name, class: cls, location: loc, age, phone };
+            syncData();
+        }
+    } else {
+        const sub = document.getElementById('edit-node-subject').value;
+        const old = localTeachers[id] || {};
+
+        if (isFirebaseSetup) {
+            db.ref("dalbile_teachers/" + id).update({
+                name: name,
+                subject: sub,
+                gender: old.gender || "Man"
+            });
+        } else {
+            localTeachers[id] = {
+                ...old,
+                name: name,
+                subject: sub
+            };
+            syncData();
+        }
+    }
+
+    closePremiumEdit();
+    showPremiumAlert("Guul! 🎉", "Xogta si guul leh ayaa loo cusboonaysiiyay.");
+}
+
+/* =========================
+   THEME SYSTEM
+   ========================= */
+function applyAutoTheme() {
+    document.body.classList.remove(...ALL_THEME_CLASSES);
+    const isNight = systemDarkQuery ? systemDarkQuery.matches : false;
+    if (isNight) document.body.classList.add('dark-mode');
+    updateAutoBadge(isNight);
+}
+
+function updateAutoBadge(isNight) {
+    const badge = document.getElementById('auto-theme-badge');
+    if (badge) {
+        badge.innerText = isNight
+            ? "🌙 Taleefankaaga wuxuu ku yaal Dark — app-kuna waa la jaanqaadey"
+            : "☀️ Taleefankaaga wuxuu ku yaal Light — app-kuna waa la jaanqaadey";
+    }
+}
+
+function setThemeMode(mode) {
+    isAutoThemeOn = false;
+    const badge = document.getElementById('auto-theme-badge');
+    if (badge) badge.style.display = "none";
+
+    document.body.classList.remove(...ALL_THEME_CLASSES);
+
+    if (mode === 'dark') document.body.classList.add('dark-mode');
+    else if (mode === 'blackberry') document.body.classList.add('blackberry-red');
+    else if (mode === 'mono') document.body.classList.add('mono-theme');
+    else if (mode === 'ocean') document.body.classList.add('ocean-theme');
+    else if (mode === 'auto') {
+        isAutoThemeOn = true;
+        if (badge) badge.style.display = "block";
+        applyAutoTheme();
+    }
+
+    localStorage.setItem('dalbileThemeMode', mode);
+}
+
+function restoreTheme() {
+    const saved = localStorage.getItem('dalbileThemeMode');
+    if (saved) {
+        setTimeout(() => setThemeMode(saved), 50);
+    }
+}
+
+function changeBackgroundTheme(themeName) {
+    const orb1 = document.querySelector('.orb-1');
+    const orb2 = document.querySelector('.orb-2');
+    const orb3 = document.querySelector('.orb-3');
+    if (!orb1 || !orb2 || !orb3) return;
+
+    if (themeName === 'aura') {
+        orb1.style.background = "rgba(255, 0, 85, 0.25)";
+        orb2.style.background = "rgba(0, 198, 255, 0.23)";
+        orb3.style.background = "rgba(138, 43, 226, 0.18)";
+    } else if (themeName === 'midnight') {
+        orb1.style.background = "rgba(0, 114, 255, 0.3)";
+        orb2.style.background = "rgba(0, 198, 255, 0.2)";
+        orb3.style.background = "rgba(10, 15, 45, 0.4)";
+    } else if (themeName === 'emerald') {
+        orb1.style.background = "rgba(0, 176, 155, 0.25)";
+        orb2.style.background = "rgba(150, 201, 61, 0.2)";
+        orb3.style.background = "rgba(0, 242, 254, 0.15)";
+    } else if (themeName === 'sunset') {
+        orb1.style.background = "rgba(255, 45, 85, 0.3)";
+        orb2.style.background = "rgba(255, 149, 0, 0.25)";
+        orb3.style.background = "rgba(138, 43, 226, 0.15)";
+    } else if (themeName === 'blackberry') {
+        orb1.style.background = "rgba(35, 5, 20, 0.6)";
+        orb2.style.background = "rgba(220, 20, 60, 0.4)";
+        orb3.style.background = "rgba(255, 45, 85, 0.2)";
+    }
+}
+
+/* =========================
+   NAVIGATION
+   ========================= */
+function show(page) {
+    const sections = ['portal', 'students', 'teachers', 'kayd', 'exams', 'settings'];
+
+    sections.forEach(sec => {
+        const el = document.getElementById(sec);
+        if (el) {
+            el.classList.remove('active-view');
+            el.style.display = "none";
+        }
+    });
+
+    const activeElement = document.getElementById(page);
+    if (activeElement) {
+        activeElement.style.display = "block";
+        activeElement.classList.add('active-view');
+    }
+
+    document.querySelectorAll('.nav-menu button').forEach(btn => btn.classList.remove('active'));
+    const sideBtn = document.getElementById(`btn-${page}`);
+    if (sideBtn) sideBtn.classList.add('active');
+
+    document.querySelectorAll('.bottom-navbar button').forEach(btn => btn.classList.remove('active'));
+    const bottomBtn = document.getElementById(`mbtn-${page}`);
+    if (bottomBtn) bottomBtn.classList.add('active');
+}
+
+/* =========================
+   PORTAL TYPE
+   ========================= */
+function setPortalType(type) {
+    currentPortalType = type;
+
+    const tabS = document.getElementById('tab-s');
+    const tabT = document.getElementById('tab-t');
+    const studentBox = document.getElementById('student-selectors');
+    const teacherBox = document.getElementById('teacher-selectors');
+
+    if (tabS) tabS.classList.remove('active');
+    if (tabT) tabT.classList.remove('active');
+
+    if (type === 'student') {
+        if (tabS) tabS.classList.add('active');
+        if (studentBox) studentBox.style.display = "block";
+        if (teacherBox) teacherBox.style.display = "none";
+    } else {
+        if (tabT) tabT.classList.add('active');
+        if (studentBox) studentBox.style.display = "none";
+        if (teacherBox) teacherBox.style.display = "block";
+    }
+}
+
+/* =========================
+   ADD DATA
+   ========================= */
+function portalRegister() {
+    const nameVal = document.getElementById('p-name').value.trim();
+    if (nameVal === "") {
+        return showPremiumAlert("Digniin ⚠️", "Fadlan qor magacaaga!", "error");
+    }
+
+    if (currentPortalType === 'student') {
+        const optionVal = document.getElementById('p-student-option').value;
+        const locVal = document.getElementById('p-student-location').value;
+        const ageVal = document.getElementById('p-student-age').value.trim();
+        const phoneVal = document.getElementById('p-student-phone').value.trim();
+
+        if (!optionVal) return showPremiumAlert("Digniin ⚠️", "Dooro fasal!", "error");
+        if (!locVal) return showPremiumAlert("Digniin ⚠️", "Dooro degmada aad dagan tahay!", "error");
+        if (!ageVal) return showPremiumAlert("Digniin ⚠️", "Fadlan qor da'da ardayga!", "error");
+        if (phoneVal === "" || phoneVal === "+252 61") {
+            return showPremiumAlert("Digniin ⚠️", "Fadlan buuxi lambarka telefoonka!", "error");
+        }
+
+        const payload = {
+            name: nameVal,
+            class: optionVal,
+            location: locVal,
+            age: ageVal,
+            phone: phoneVal
+        };
+
+        if (isFirebaseSetup) {
+            studentsRef.push(payload);
+        } else {
+            const id = "local_" + Date.now();
+            localStudents[id] = payload;
+            syncData();
+        }
+
+        document.getElementById('p-student-age').value = "";
+        document.getElementById('p-student-phone').value = "+252 61";
+    } else {
+        const genderVal = document.getElementById('p-teacher-gender').value;
+        const subjectVal = document.getElementById('p-teacher-subject').value;
+
+        if (!genderVal || !subjectVal) {
+            return showPremiumAlert("Digniin ⚠️", "Buuxi xogta macalinka!", "error");
+        }
+
+        const payload = {
+            name: nameVal,
+            gender: genderVal,
+            subject: subjectVal
+        };
+
+        if (isFirebaseSetup) {
+            teachersRef.push(payload);
+        } else {
+            const id = "local_" + Date.now();
+            localTeachers[id] = payload;
+            syncData();
+        }
+    }
+
+    document.getElementById('p-name').value = "";
+    showPremiumAlert("Guul! 🎉", "Xogta si guul leh ayaa loo kaydiyay.");
+}
+
+function addStudent() {
+    const sname = document.getElementById("sname");
+    const sclass = document.getElementById("sclass");
+    const slocation = document.getElementById("slocation");
+    const sage = document.getElementById("sage");
+    const sphone = document.getElementById("sphone");
+
+    if (sname.value.trim() === "") return showPremiumAlert("Digniin ⚠️", "Qor magaca ardayga!", "error");
+    if (sage.value.trim() === "") return showPremiumAlert("Digniin ⚠️", "Fadlan qor da'da!", "error");
+    if (sphone.value.trim() === "" || sphone.value.trim() === "+252 61") {
+        return showPremiumAlert("Digniin ⚠️", "Fadlan qor lambarka telefoonka!", "error");
+    }
+
+    const payload = {
+        name: sname.value.trim(),
+        class: sclass.value,
+        location: slocation.value,
+        age: sage.value.trim(),
+        phone: sphone.value.trim()
+    };
+
+    if (isFirebaseSetup) {
+        studentsRef.push(payload);
+    } else {
+        const id = "local_" + Date.now();
+        localStudents[id] = payload;
+        syncData();
+    }
+
+    sname.value = "";
+    sage.value = "";
+    sphone.value = "+252 61";
+    showPremiumAlert("Guul! 🎉", "Ardayga cusub waa la kaydiyay.");
+}
+
+function addTeacher() {
+    const tname = document.getElementById("tname");
+    const tgender = document.getElementById("tgender");
+    const tsubject = document.getElementById("tsubject");
+
+    if (tname.value.trim() === "") {
+        return showPremiumAlert("Digniin ⚠️", "Qor magaca macalinka!", "error");
+    }
+
+    const payload = {
+        name: tname.value.trim(),
+        gender: tgender.value,
+        subject: tsubject.value
+    };
+
+    if (isFirebaseSetup) {
+        teachersRef.push(payload);
+    } else {
+        const id = "local_" + Date.now();
+        localTeachers[id] = payload;
+        syncData();
+    }
+
+    tname.value = "";
+    showPremiumAlert("Guul! 🎉", "Macalinka cusub waa la kaydiyay.");
+}
+
+/* =========================
+   DELETE
+   ========================= */
+function delStudent(id) {
+    const ok = confirm("Ma hubtaa inaad tirtirayso ardaygan?");
+    if (!ok) return;
+
+    if (isFirebaseSetup) {
+        studentsRef.child(id).remove();
+    } else {
+        delete localStudents[id];
+        syncData();
+    }
+}
+
+function delTeacher(id) {
+    const ok = confirm("Ma hubtaa inaad tirtirayso macalinkan?");
+    if (!ok) return;
+
+    if (isFirebaseSetup) {
+        teachersRef.child(id).remove();
+    } else {
+        delete localTeachers[id];
+        syncData();
+    }
+}
+
+/* =========================
+   RENDER
+   ========================= */
+function renderAll() {
+    const vaultListS = document.getElementById("vaultStudentList");
+    const vaultListT = document.getElementById("vaultTeacherList");
+
+    if (vaultListS) vaultListS.innerHTML = "";
+    if (vaultListT) vaultListT.innerHTML = "";
+
+    let sCount = 0;
+    let tCount = 0;
+
+    for (let id in localStudents) {
+        sCount++;
+        const st = localStudents[id];
+        const ageStr = st.age ? `${st.age} Sano` : 'N/A';
+        const phoneStr = st.phone || '+252 61';
+        const locStr = st.location || 'Daynile';
+        const classStr = st.class || 'None';
+
+        const html = `
+        <div class="item student-item-card">
+            <div class="item-text" onclick="openStudentProfile('${id}')" style="cursor:pointer; flex:1;">
+                <font>🎓 ${escapeHtml(st.name || 'No Name')}</font>
+                <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:5px;">
+                    <span style="background:rgba(0,85,255,0.08); color:#0072ff; padding:2px 8px; border-radius:12px; font-weight:700; font-size:10px;">Fasalka: ${escapeHtml(classStr)}</span>
+                    <span style="background:rgba(138,43,226,0.08); color:#8a2be2; padding:2px 8px; border-radius:12px; font-weight:700; font-size:10px;">📍 ${escapeHtml(locStr)}</span>
+                    <span style="background:rgba(255,45,85,0.08); color:#ff2d55; padding:2px 8px; border-radius:12px; font-weight:700; font-size:10px;">Da'da: ${escapeHtml(ageStr)}</span>
+                    <span style="background:rgba(0,176,155,0.08); color:#00b09b; padding:2px 8px; border-radius:12px; font-weight:700; font-size:10px;"><i class="fa fa-phone"></i> ${escapeHtml(phoneStr)}</span>
+                </div>
+            </div>
+            <div class="action-box-controls">
+                <a href="tel:${phoneStr}" class="call-direct-btn" title="Wac Mobilka"><i class="fa fa-phone"></i></a>
+                <button class="edit-premium-btn" onclick="openPremiumEdit('${id}','student')"><i class="fa fa-pen"></i></button>
+                <button class="delete-premium-btn" onclick="delStudent('${id}')"><i class="fa fa-trash"></i></button>
+            </div>
+        </div>`;
+
+        if (vaultListS) vaultListS.innerHTML += html;
+    }
+
+    for (let id in localTeachers) {
+        tCount++;
+        const tc = localTeachers[id];
+        const html = `
+        <div class="item teacher-item-card">
+            <div class="item-text" style="flex:1;">
+                <font>👨‍🏫 ${escapeHtml(tc.name || 'No Name')}</font>
+                <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:5px;">
+                    <span style="background:rgba(255,149,0,0.1); color:#ff9500; padding:2px 10px; border-radius:12px; font-weight:700; font-size:11px;">Subject: ${escapeHtml(tc.subject || 'Tarbiya')}</span>
+                    <span style="background:rgba(0,0,0,0.04); color:var(--text-muted); padding:2px 10px; border-radius:12px; font-weight:600; font-size:11px;">Gender: ${escapeHtml(tc.gender || 'Man')}</span>
+                </div>
+            </div>
+            <div class="action-box-controls">
+                <button class="edit-premium-btn" onclick="openPremiumEdit('${id}','teacher')"><i class="fa fa-pen"></i></button>
+                <button class="delete-premium-btn" onclick="delTeacher('${id}')"><i class="fa fa-trash"></i></button>
+            </div>
+        </div>`;
+
+        if (vaultListT) vaultListT.innerHTML += html;
+    }
+
+    const countStudents = document.getElementById("count-students");
+    const countTeachers = document.getElementById("count-teachers");
+    const chipS = document.getElementById("kayd-student-chip");
+    const chipT = document.getElementById("kayd-teacher-chip");
+
+    if (countStudents) countStudents.innerText = sCount;
+    if (countTeachers) countTeachers.innerText = tCount;
+    if (chipS) chipS.innerText = sCount + (sCount === 1 ? " Arday" : " Ardayda");
+    if (chipT) chipT.innerText = tCount + (tCount === 1 ? " Macalin" : " Macalimiin");
+
+    if (vaultListS && sCount === 0) {
+        vaultListS.innerHTML = `<p style="text-align:center; color:var(--text-muted); padding:18px 10px; font-size:12.5px; font-weight:600;">Wali arday lama diiwaan gelin 📭</p>`;
+    }
+
+    if (vaultListT && tCount === 0) {
+        vaultListT.innerHTML = `<p style="text-align:center; color:var(--text-muted); padding:18px 10px; font-size:12.5px; font-weight:600;">Wali macalin lama diiwaan gelin 📭</p>`;
+    }
+
+    executeInlineSearch();
+    initKeyboardWatcher();
+}
+
+/* =========================
+   SEARCH
+   ========================= */
+function executeInlineSearch() {
+    const input = document.getElementById('inline-search-input');
+    const resultsContainer = document.getElementById('inline-search-results');
+    if (!input || !resultsContainer) return;
+
+    const query = input.value.toLowerCase().trim();
+    resultsContainer.innerHTML = "";
+
+    if (query === "") {
+        resultsContainer.style.display = "none";
+        return;
+    }
+
+    resultsContainer.style.display = "flex";
+    let foundMatch = false;
+
+    for (let id in localStudents) {
+        const student = localStudents[id];
+        const name = (student.name || '').toLowerCase();
+        const cls = (student.class || '').toLowerCase();
+        const loc = (student.location || 'daynile').toLowerCase();
+        const phone = student.phone || '+252 61';
+
+        if (name.includes(query) || cls.includes(query) || loc.includes(query)) {
+            foundMatch = true;
+            const locStr = student.location || 'Daynile';
+
+            resultsContainer.innerHTML += `
+            <div class="item student-item-card">
+                <div class="item-text" onclick="openStudentProfile('${id}')" style="cursor:pointer; flex:1;">
+                    <font>🎓 ${escapeHtml(student.name || 'No Name')}</font>
+                    <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:4px;">
+                        <span style="background:rgba(0,85,255,0.08); color:#0072ff; padding:2px 8px; border-radius:12px; font-weight:700; font-size:10px;">Class: ${escapeHtml(student.class || 'None')}</span>
+                        <span style="background:rgba(138,43,226,0.08); color:#8a2be2; padding:2px 8px; border-radius:12px; font-weight:700; font-size:10px;">📍 ${escapeHtml(locStr)}</span>
+                    </div>
+                </div>
+                <div class="action-box-controls">
+                    <a href="tel:${phone}" class="call-direct-btn"><i class="fa fa-phone"></i></a>
+                </div>
+            </div>`;
+        }
+    }
+
+    for (let id in localTeachers) {
+        const teacher = localTeachers[id];
+        const name = (teacher.name || '').toLowerCase();
+        const subject = (teacher.subject || '').toLowerCase();
+
+        if (name.includes(query) || subject.includes(query)) {
+            foundMatch = true;
+            resultsContainer.innerHTML += `
+            <div class="item teacher-item-card">
+                <div class="item-text" style="flex:1;">
+                    <font>👨‍🏫 ${escapeHtml(teacher.name || 'No Name')}</font>
+                    <span>Subject: ${escapeHtml(teacher.subject || 'Tarbiya')}</span>
+                </div>
+            </div>`;
+        }
+    }
+
+    if (!foundMatch) {
+        resultsContainer.innerHTML = `<p style="text-align:center; color:var(--text-muted); padding:15px; font-size:13px;">Natiijo la heli waayay... ❌</p>`;
+    }
+}
+
+/* =========================
+   HELPERS
+   ========================= */
+function escapeHtml(str) {
+    return String(str)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+}
+</script>
