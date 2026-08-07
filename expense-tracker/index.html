@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Expense Tracker</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h1>💰 ExpenseTracker</h1>
+            </div>
+            <nav class="nav-menu">
+                <a href="#" class="nav-item active" data-page="home">
+                    <span class="icon">🏠</span>
+                    <span>Home</span>
+                </a>
+                <a href="#" class="nav-item" data-page="add-expense">
+                    <span class="icon">➖</span>
+                    <span>Add Expense</span>
+                </a>
+                <a href="#" class="nav-item" data-page="add-income">
+                    <span class="icon">➕</span>
+                    <span>Add Income</span>
+                </a>
+                <a href="#" class="nav-item" data-page="transactions">
+                    <span class="icon">📋</span>
+                    <span>Transactions</span>
+                </a>
+                <a href="#" class="nav-item" data-page="settings">
+                    <span class="icon">⚙️</span>
+                    <span>Settings</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header with User Profile -->
+            <header class="top-header">
+                <div class="header-left">
+                    <h2 id="page-title">Home</h2>
+                </div>
+                <div class="header-right">
+                    <div class="user-profile">
+                        <span class="avatar">👤</span>
+                        <span class="username">Daacad</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Pages Container -->
+            <div class="pages-container">
+                <!-- HOME PAGE -->
+                <div id="home" class="page active">
+                    <div class="dashboard">
+                        <div class="stats-grid">
+                            <div class="stat-card income">
+                                <div class="stat-label">Total Income</div>
+                                <div class="stat-value" id="total-income">$0.00</div>
+                            </div>
+                            <div class="stat-card expense">
+                                <div class="stat-label">Total Expense</div>
+                                <div class="stat-value" id="total-expense">$0.00</div>
+                            </div>
+                            <div class="stat-card balance">
+                                <div class="stat-label">Balance</div>
+                                <div class="stat-value" id="balance">$0.00</div>
+                            </div>
+                        </div>
+
+                        <div class="quick-actions">
+                            <button class="btn btn-primary" id="quick-add-expense">
+                                <span>➖</span> Quick Add Expense
+                            </button>
+                            <button class="btn btn-success" id="quick-add-income">
+                                <span>➕</span> Quick Add Income
+                            </button>
+                        </div>
+
+                        <div class="recent-transactions">
+                            <h3>Recent Transactions</h3>
+                            <div id="recent-list" class="transaction-list">
+                                <p class="empty-state">No transactions yet. Start by adding an expense or income!</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ADD EXPENSE PAGE -->
+                <div id="add-expense" class="page">
+                    <div class="form-container">
+                        <h2>Add Expense</h2>
+                        <form id="expense-form" class="transaction-form">
+                            <div class="form-group">
+                                <label for="expense-amount">Amount</label>
+                                <div class="input-group">
+                                    <span class="currency-symbol">$</span>
+                                    <input type="number" id="expense-amount" placeholder="0.00" step="0.01" min="0" required>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="expense-category">Category</label>
+                                <select id="expense-category" required>
+                                    <option value="">Select a category</option>
+                                    <option value="Food">🍔 Food</option>
+                                    <option value="Transport">🚗 Transport</option>
+                                    <option value="Entertainment">🎬 Entertainment</option>
+                                    <option value="Utilities">💡 Utilities</option>
+                                    <option value="Shopping">🛍️ Shopping</option>
+                                    <option value="Health">🏥 Health</option>
+                                    <option value="Other">📝 Other</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="expense-description">Description</label>
+                                <input type="text" id="expense-description" placeholder="e.g., Lunch at restaurant" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="expense-date">Date</label>
+                                <input type="date" id="expense-date" required>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary btn-full">Add Expense</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- ADD INCOME PAGE -->
+                <div id="add-income" class="page">
+                    <div class="form-container">
+                        <h2>Add Income</h2>
+                        <form id="income-form" class="transaction-form">
+                            <div class="form-group">
+                                <label for="income-amount">Amount</label>
+                                <div class="input-group">
+                                    <span class="currency-symbol">$</span>
+                                    <input type="number" id="income-amount" placeholder="0.00" step="0.01" min="0" required>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="income-source">Income Source</label>
+                                <select id="income-source" required>
+                                    <option value="">Select a source</option>
+                                    <option value="Salary">💼 Salary</option>
+                                    <option value="Freelance">💻 Freelance</option>
+                                    <option value="Investment">📈 Investment</option>
+                                    <option value="Gift">🎁 Gift</option>
+                                    <option value="Business">🏢 Business</option>
+                                    <option value="Other">📝 Other</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="income-description">Description</label>
+                                <input type="text" id="income-description" placeholder="e.g., Monthly salary" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="income-date">Date</label>
+                                <input type="date" id="income-date" required>
+                            </div>
+
+                            <button type="submit" class="btn btn-success btn-full">Add Income</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- TRANSACTIONS PAGE -->
+                <div id="transactions" class="page">
+                    <div class="transactions-container">
+                        <div class="transactions-header">
+                            <h2>All Transactions</h2>
+                            <div class="filter-group">
+                                <select id="filter-type">
+                                    <option value="all">All Transactions</option>
+                                    <option value="income">Income Only</option>
+                                    <option value="expense">Expense Only</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div id="all-transactions" class="transaction-list">
+                            <p class="empty-state">No transactions yet.</p>
+                        </div>
+
+                        <div class="transactions-actions">
+                            <button class="btn btn-danger" id="clear-all-btn">Delete All Data</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SETTINGS PAGE -->
+                <div id="settings" class="page">
+                    <div class="settings-container">
+                        <h2>Settings</h2>
+
+                        <!-- Profile Section -->
+                        <div class="settings-section">
+                            <h3>👤 Profile</h3>
+                            <div class="setting-item">
+                                <label for="username-input">Username</label>
+                                <input type="text" id="username-input" value="Daacad" placeholder="Your name">
+                            </div>
+                        </div>
+
+                        <!-- Appearance Section -->
+                        <div class="settings-section">
+                            <h3>🌙 Appearance</h3>
+                            <div class="setting-item toggle">
+                                <label for="dark-mode-toggle">Dark Mode</label>
+                                <input type="checkbox" id="dark-mode-toggle" class="toggle-switch">
+                            </div>
+                        </div>
+
+                        <!-- Currency Section -->
+                        <div class="settings-section">
+                            <h3>💵 Currency</h3>
+                            <div class="setting-item">
+                                <label for="currency-select">Select Currency</label>
+                                <select id="currency-select">
+                                    <option value="USD">$ USD</option>
+                                    <option value="EUR">€ EUR</option>
+                                    <option value="GBP">£ GBP</option>
+                                    <option value="JPY">¥ JPY</option>
+                                    <option value="INR">₹ INR</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Language Section -->
+                        <div class="settings-section">
+                            <h3>🗣️ Language</h3>
+                            <div class="setting-item">
+                                <label for="language-select">Select Language</label>
+                                <select id="language-select">
+                                    <option value="en">English</option>
+                                    <option value="so">Somali</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Notifications Section -->
+                        <div class="settings-section">
+                            <h3>🔔 Notifications</h3>
+                            <div class="setting-item toggle">
+                                <label for="notifications-toggle">Enable Notifications</label>
+                                <input type="checkbox" id="notifications-toggle" class="toggle-switch" checked>
+                            </div>
+                        </div>
+
+                        <!-- Security Section -->
+                        <div class="settings-section">
+                            <h3>🔐 Security</h3>
+                            <div class="setting-item toggle">
+                                <label for="pin-lock-toggle">PIN Lock</label>
+                                <input type="checkbox" id="pin-lock-toggle" class="toggle-switch">
+                            </div>
+                            <div id="pin-section" class="pin-section" style="display: none;">
+                                <label for="pin-input">Set PIN (4 digits)</label>
+                                <input type="password" id="pin-input" maxlength="4" placeholder="••••">
+                            </div>
+                        </div>
+
+                        <!-- Data Section -->
+                        <div class="settings-section">
+                            <h3>📊 Data</h3>
+                            <button class="btn btn-info" id="export-data-btn">📥 Export Data</button>
+                            <button class="btn btn-info" id="backup-data-btn">💾 Backup Data</button>
+                        </div>
+
+                        <!-- Danger Zone -->
+                        <div class="settings-section danger">
+                            <h3>⚠️ Danger Zone</h3>
+                            <button class="btn btn-danger" id="delete-all-data-btn">Delete All Data</button>
+                        </div>
+
+                        <button class="btn btn-success btn-full" id="save-settings-btn">Save Settings</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal for Quick Add -->
+    <div id="quick-modal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close">&times;</span>
+            <h2 id="modal-title">Quick Add Expense</h2>
+            <form id="quick-form">
+                <div class="form-group">
+                    <label for="quick-amount">Amount</label>
+                    <div class="input-group">
+                        <span class="currency-symbol">$</span>
+                        <input type="number" id="quick-amount" placeholder="0.00" step="0.01" min="0" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="quick-desc">Description</label>
+                    <input type="text" id="quick-desc" placeholder="Brief description" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-full">Add</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
